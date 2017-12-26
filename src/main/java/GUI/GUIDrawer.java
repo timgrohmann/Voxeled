@@ -1,10 +1,12 @@
 package GUI;
 
+import Buffers.BlockABO;
 import Buffers.GUILineABO;
 import Buffers.GUISelectionABO;
 import Buffers.Triangle2DABO;
 import Entities.Block;
 import GL_Math.Matrix4;
+import GL_Math.Vector3;
 import Main_Package.Renderer;
 import Models.GUITexturedVertex;
 import Models.GUIVertex;
@@ -12,6 +14,7 @@ import Models.Vertex;
 import Shader.GUI2DShaderProgram;
 import Shader.GUISelectionShaderProgram;
 import Shader.GUITextured2DShaderProgram;
+import Shader.WorldShaderProgram;
 import Textures.Texture;
 
 import java.util.ArrayList;
@@ -23,10 +26,12 @@ public class GUIDrawer {
     private GUI2DShaderProgram gui2DShaderProgram;
     private GUISelectionShaderProgram selectionShaderProgram;
     private GUITextured2DShaderProgram guiTextured2DShaderProgram;
+    private WorldShaderProgram inventoryBlockShaderProgram;
 
     private GUILineABO arrayBuffer;
     private GUISelectionABO arrayBuffer3D;
     private Triangle2DABO mainGuiBuffer;
+    private BlockABO inventroyBlockABO;
 
     public boolean menuShown = false;
 
@@ -41,6 +46,7 @@ public class GUIDrawer {
             this.gui2DShaderProgram = new GUI2DShaderProgram();
             this.selectionShaderProgram = new GUISelectionShaderProgram();
             this.guiTextured2DShaderProgram = new GUITextured2DShaderProgram();
+            this.inventoryBlockShaderProgram = new WorldShaderProgram();
         }catch (Exception e) {
             e.printStackTrace();
         }
@@ -57,6 +63,7 @@ public class GUIDrawer {
         arrayBuffer3D = new GUISelectionABO(selectionShaderProgram);
 
         mainGuiBuffer = new Triangle2DABO(this.guiTextured2DShaderProgram);
+        inventroyBlockABO = new BlockABO(this.inventoryBlockShaderProgram);
     }
 
     public void renderStaticGUI(Matrix4 matrix4) {
@@ -109,17 +116,21 @@ public class GUIDrawer {
 
 
         //Switch back to texture slot 0
-        guiTextured2DShaderProgram.setUniformInt("texture_diffuse", 0);
+        inventoryBlockShaderProgram.use();
+        inventoryBlockShaderProgram.setUniformMatrix("mat", Matrix4.guiMatrix(1,renderer.getWindow().getAspectRatio()));
+        inventoryBlockShaderProgram.setUniformVector("light_dir", new Vector3(0,-5,-5));
 
         Block[] inventory = renderer.player.inventory();
-        ArrayList<GUITexturedVertex> displayBlockVertices = new ArrayList<>();
+        ArrayList<Vertex> displayBlockVertices = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
             if (inventory[i] == null) continue;
             displayBlockVertices.addAll(Arrays.asList(blockDisplayQuad(i,inventory[i])));
         }
 
-        mainGuiBuffer.load(displayBlockVertices);
-        mainGuiBuffer.render();
+        Vertex[] vertices1 = new Vertex[displayBlockVertices.size()];
+        vertices1 = displayBlockVertices.toArray(vertices1);
+        inventroyBlockABO.load(vertices1);
+        inventroyBlockABO.render();
 
         renderer.setDepthTest(true);
     }
@@ -162,7 +173,7 @@ public class GUIDrawer {
         return texQuadAspectAndPixel(-0.9f,-0.75f,1.8f,0,182,1,21);
     }
 
-    private static GUITexturedVertex[] blockDisplayQuad(int slot, Block block) {
+    private static Vertex[] blockDisplayQuad(int slot, Block block) {
         Texture topTexture = block.getTopTexture();
         Texture sideTexture = block.getSideTexture();
         float h = 0.10f;
@@ -171,25 +182,25 @@ public class GUIDrawer {
         float inCircleRad = 0.866f * h / 2;
 
         //top side
-        GUITexturedVertex top = new GUITexturedVertex(xMid,yMid + h / 2, 0, 0);
-        GUITexturedVertex right = new GUITexturedVertex(xMid + inCircleRad,yMid + h / 4, 0, 1);
-        GUITexturedVertex bottom = new GUITexturedVertex(xMid,yMid, 1, 1);
-        GUITexturedVertex left = new GUITexturedVertex(xMid - inCircleRad,yMid + h / 4, 1, 0);
+        Vertex top = new Vertex(new Vector3(xMid,yMid + h / 2,0), 0, 0, topTexture);
+        Vertex right = new Vertex(new Vector3(xMid + inCircleRad,yMid + h / 4,0), 0, 1, topTexture);
+        Vertex bottom = new Vertex(new Vector3(xMid,yMid,0), 1, 1, topTexture);
+        Vertex left = new Vertex(new Vector3(xMid - inCircleRad,yMid + h / 4,0), 1, 0, topTexture);
 
 
         //right side
-        GUITexturedVertex rightTop = new GUITexturedVertex(xMid + inCircleRad,yMid + h / 4, 0, 0);
-        GUITexturedVertex rightBottom = new GUITexturedVertex(xMid + inCircleRad,yMid - h / 4, 0, 1);
-        GUITexturedVertex rightMidBottom = new GUITexturedVertex(xMid,yMid - h / 2, 1, 1);
-        GUITexturedVertex rightCenter = new GUITexturedVertex(xMid,yMid, 1, 0);
+        Vertex rightTop = new Vertex(new Vector3(xMid + inCircleRad,yMid + h / 4,0), 0, 0, sideTexture);
+        Vertex rightBottom = new Vertex(new Vector3(xMid + inCircleRad,yMid - h / 4,0), 0, 1, sideTexture);
+        Vertex rightMidBottom = new Vertex(new Vector3(xMid,yMid - h / 2,0), 1, 1, sideTexture);
+        Vertex rightCenter = new Vertex(new Vector3(xMid,yMid,0), 1, 0, sideTexture);
 
         //left side
-        GUITexturedVertex leftTop = new GUITexturedVertex(xMid - inCircleRad,yMid + h / 4, 1, 0);
-        GUITexturedVertex leftBottom = new GUITexturedVertex(xMid - inCircleRad,yMid - h / 4, 1, 1);
-        GUITexturedVertex leftMidBottom = new GUITexturedVertex(xMid,yMid - h / 2, 0, 1);
-        GUITexturedVertex leftCenter = new GUITexturedVertex(xMid,yMid, 0, 0);
+        Vertex leftTop = new Vertex(new Vector3(xMid - inCircleRad,yMid + h / 4,0), 1, 0, sideTexture);
+        Vertex leftBottom = new Vertex(new Vector3(xMid - inCircleRad,yMid - h / 4,0), 1, 1, sideTexture);
+        Vertex leftMidBottom = new Vertex(new Vector3(xMid,yMid - h / 2,0), 0, 1, sideTexture);
+        Vertex leftCenter = new Vertex(new Vector3(xMid,yMid,0), 0, 0, sideTexture);
 
-        return new GUITexturedVertex[]{
+        return new Vertex[]{
                 top,right,bottom,bottom,left,top,
                 rightTop,rightBottom,rightMidBottom,rightMidBottom,rightCenter,rightTop,
                 leftTop,leftBottom,leftMidBottom,leftMidBottom,leftCenter,leftTop

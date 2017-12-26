@@ -57,20 +57,20 @@ abstract public class Block extends DrawableEntity implements Collidable {
 
     public abstract void registerTextures();
 
-    protected void loadTextures(String topName, String sideName, String bottomName, boolean transparent) {
-        topTexture = new Texture(topName);
+    protected void loadTextures(String topName, String sideName, String bottomName, boolean transparent, boolean foliage) {
+        topTexture = new Texture(topName, foliage);
         sideTexture = new Texture(sideName);
         bottomTexture = new Texture(bottomName);
 
         this.transparent = transparent;
     }
-    protected void loadTextures(String allName, boolean transparent) {
-        topTexture = sideTexture = bottomTexture = new Texture(allName);
+    protected void loadTextures(String allName, boolean transparent, boolean foliage) {
+        topTexture = sideTexture = bottomTexture = new Texture(allName,foliage);
         this.transparent = transparent;
     }
 
     protected void loadTextures(String allName) {
-        loadTextures(allName,false);
+        loadTextures(allName,false,false);
     }
 
     public int vertexCount() {

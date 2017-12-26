@@ -24,9 +24,9 @@ public class Renderer {
 
     private final ArrayList<Entity> entities;
 
-    final World world;
+    public final World world;
 
-    public WorldShaderProgram program;
+    public WorldShaderProgram worldShader;
     public WaterShaderProgram waterShader;
     public final Game_IO gameIO;
     public final Camera camera;
@@ -94,7 +94,7 @@ public class Renderer {
 
 
         try {
-            program =  new WorldShaderProgram();
+            worldShader =  new WorldShaderProgram();
             waterShader = new WaterShaderProgram();
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,7 +103,7 @@ public class Renderer {
 
         skyBox = new SkyBox();
         guiDrawer = new GUIDrawer(this);
-        program.use();
+        worldShader.use();
 
 
 
@@ -111,9 +111,9 @@ public class Renderer {
 
 
         Vector3 lightDirection = new Vector3(2,100,1);
-        program.setUniformVector("light_dir", lightDirection);
+        worldShader.setUniformVector("light_dir", lightDirection);
 
-        matLocation = program.uniformLocation("mat");
+        matLocation = worldShader.uniformLocation("mat");
 
 
 
@@ -177,6 +177,10 @@ public class Renderer {
 
     public int chunkLoadedCount() {
         return world.chunks.size();
+    }
+
+    public void activateBlockTextures() {
+        world.blockTextures.activateTextures();
     }
 
 }

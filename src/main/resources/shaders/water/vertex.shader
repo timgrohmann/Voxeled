@@ -4,11 +4,12 @@ layout(location = 0) in vec3 in_Position;
 layout(location = 1) in vec3 in_UVW;
 
 layout(location = 2) in vec3 in_Normal;
-layout(location = 3) in int in_Layer;
+layout(location = 3) in vec3 in_BlendColor;
 
 uniform mat4 mat;
 uniform vec3 light_dir;
 
+out vec3 blendColor;
 out vec3 UVW;
 out float lightness;
 
@@ -21,4 +22,5 @@ void main(void) {
 
     lightness = (clamp(dot(normalize(in_Normal), normalize(light_dir - in_Position)), 0, 1) * (1-diff_light) + diff_light);
     UVW = in_UVW;
+    blendColor = in_BlendColor;
 }

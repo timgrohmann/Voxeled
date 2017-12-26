@@ -11,6 +11,6 @@ public class Leaf extends Block {
 
     @Override
     public void registerTextures() {
-        loadTextures("leaves_oak");
+        loadTextures("leaves_oak", false, true);
     }
 }

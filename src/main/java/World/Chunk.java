@@ -154,7 +154,7 @@ public class Chunk {
     private void load() {
         testVisible();
 
-        arrayBuffer = new BlockABO(world.renderer.program);
+        arrayBuffer = new BlockABO(world.renderer.worldShader);
         Vertex[] vertices = getVertices();
         arrayBuffer.load(vertices);
         arrayBuffer.loadAttributePointers();

@@ -11,6 +11,6 @@ public class Wood extends Block {
 
     @Override
     public void registerTextures() {
-        loadTextures("log_oak_top", "log_oak", "log_oak_top", false);
+        loadTextures("log_oak_top", "log_oak", "log_oak_top", false, false);
     }
 }
