@@ -1,0 +1,6 @@
+/world/*
+*.log
+/.idea/*
+/.gradle/*
+/gradle/*
+/out/*
