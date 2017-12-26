@@ -16,9 +16,9 @@ abstract public class ShaderProgram {
 
     private String log;
 
-    ShaderProgram(String vertexShaderPath, String fragmentShaderPath) throws Exception {
-        int vertex = compileShader(vertexShaderPath, GL_VERTEX_SHADER);
-        int fragment = compileShader(fragmentShaderPath, GL_FRAGMENT_SHADER);
+    ShaderProgram(String shaderDir) throws Exception {
+        int vertex = compileShader("src/main/resources/shaders/" + shaderDir + "/vertex.shader", GL_VERTEX_SHADER);
+        int fragment = compileShader("src/main/resources/shaders/" + shaderDir + "/fragment.shader", GL_FRAGMENT_SHADER);
 
         //create the program
         program = glCreateProgram();
