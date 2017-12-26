@@ -8,7 +8,11 @@ import World.Chunk;
 public class LogsSlab extends Block {
     public LogsSlab(Vector3 pos, Chunk chunk) {
         super(pos, Block.Type.LOGS, chunk);
-        loadTextures(4);
+    }
+
+    @Override
+    public void registerTextures() {
+        loadTextures("planks_oak");
     }
 
     @Override

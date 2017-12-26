@@ -7,7 +7,11 @@ import World.Chunk;
 public class Bedrock extends Block {
     public Bedrock(Vector3 pos, Chunk chunk) {
         super(pos, Type.BEDROCK, chunk);
-        loadTextures(17);
+    }
+
+    @Override
+    public void registerTextures() {
+        loadTextures("bedrock");
     }
 
     @Override

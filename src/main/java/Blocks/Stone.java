@@ -7,6 +7,10 @@ import World.Chunk;
 public class Stone extends Block {
     public Stone(Vector3 pos, Chunk chunk) {
         super(pos, Type.STONE, chunk);
-        loadTextures(1);
+    }
+
+    @Override
+    public void registerTextures() {
+        loadTextures("stone");
     }
 }

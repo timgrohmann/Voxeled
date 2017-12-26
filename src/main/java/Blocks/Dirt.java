@@ -7,6 +7,10 @@ import World.Chunk;
 public class Dirt extends Block {
     public Dirt(Vector3 pos, Chunk chunk) {
         super(pos, Type.DIRT, chunk);
-        loadTextures(2);
+    }
+
+    @Override
+    public void registerTextures() {
+        loadTextures("dirt");
     }
 }

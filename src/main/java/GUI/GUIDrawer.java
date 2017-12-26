@@ -171,23 +171,23 @@ public class GUIDrawer {
         float inCircleRad = 0.866f * h / 2;
 
         //top side
-        GUITexturedVertex top = new GUITexturedVertex(xMid,yMid + h / 2, topTexture.convertedU(0), topTexture.convertedV(0));
-        GUITexturedVertex right = new GUITexturedVertex(xMid + inCircleRad,yMid + h / 4, topTexture.convertedU(0), topTexture.convertedV(1));
-        GUITexturedVertex bottom = new GUITexturedVertex(xMid,yMid, topTexture.convertedU(1), topTexture.convertedV(1));
-        GUITexturedVertex left = new GUITexturedVertex(xMid - inCircleRad,yMid + h / 4, topTexture.convertedU(1), topTexture.convertedV(0));
+        GUITexturedVertex top = new GUITexturedVertex(xMid,yMid + h / 2, 0, 0);
+        GUITexturedVertex right = new GUITexturedVertex(xMid + inCircleRad,yMid + h / 4, 0, 1);
+        GUITexturedVertex bottom = new GUITexturedVertex(xMid,yMid, 1, 1);
+        GUITexturedVertex left = new GUITexturedVertex(xMid - inCircleRad,yMid + h / 4, 1, 0);
 
 
         //right side
-        GUITexturedVertex rightTop = new GUITexturedVertex(xMid + inCircleRad,yMid + h / 4, sideTexture.convertedU(0), sideTexture.convertedV(0));
-        GUITexturedVertex rightBottom = new GUITexturedVertex(xMid + inCircleRad,yMid - h / 4, sideTexture.convertedU(0), sideTexture.convertedV(1));
-        GUITexturedVertex rightMidBottom = new GUITexturedVertex(xMid,yMid - h / 2, sideTexture.convertedU(1), sideTexture.convertedV(1));
-        GUITexturedVertex rightCenter = new GUITexturedVertex(xMid,yMid, sideTexture.convertedU(1), sideTexture.convertedV(0));
+        GUITexturedVertex rightTop = new GUITexturedVertex(xMid + inCircleRad,yMid + h / 4, 0, 0);
+        GUITexturedVertex rightBottom = new GUITexturedVertex(xMid + inCircleRad,yMid - h / 4, 0, 1);
+        GUITexturedVertex rightMidBottom = new GUITexturedVertex(xMid,yMid - h / 2, 1, 1);
+        GUITexturedVertex rightCenter = new GUITexturedVertex(xMid,yMid, 1, 0);
 
         //left side
-        GUITexturedVertex leftTop = new GUITexturedVertex(xMid - inCircleRad,yMid + h / 4, sideTexture.convertedU(1), sideTexture.convertedV(0));
-        GUITexturedVertex leftBottom = new GUITexturedVertex(xMid - inCircleRad,yMid - h / 4, sideTexture.convertedU(1), sideTexture.convertedV(1));
-        GUITexturedVertex leftMidBottom = new GUITexturedVertex(xMid,yMid - h / 2, sideTexture.convertedU(0), sideTexture.convertedV(1));
-        GUITexturedVertex leftCenter = new GUITexturedVertex(xMid,yMid, sideTexture.convertedU(0), sideTexture.convertedV(0));
+        GUITexturedVertex leftTop = new GUITexturedVertex(xMid - inCircleRad,yMid + h / 4, 1, 0);
+        GUITexturedVertex leftBottom = new GUITexturedVertex(xMid - inCircleRad,yMid - h / 4, 1, 1);
+        GUITexturedVertex leftMidBottom = new GUITexturedVertex(xMid,yMid - h / 2, 0, 1);
+        GUITexturedVertex leftCenter = new GUITexturedVertex(xMid,yMid, 0, 0);
 
         return new GUITexturedVertex[]{
                 top,right,bottom,bottom,left,top,

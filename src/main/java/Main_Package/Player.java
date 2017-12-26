@@ -216,13 +216,13 @@ public class Player extends Entity implements Collidable{
 
     public Block[] inventory() {
         return new Block[]{
-                Block.Type.STONE.createSingletonInstance(),
-                Block.Type.GRASS.createSingletonInstance(),
-                Block.Type.DIRT.createSingletonInstance(),
-                Block.Type.WOOD.createSingletonInstance(),
-                Block.Type.LOGS.createSingletonInstance(),
-                Block.Type.LEAF.createSingletonInstance(),
-                Block.Type.SAND.createSingletonInstance(),
+                renderer.registry.getBlockSingletonForType(Block.Type.STONE),
+                renderer.registry.getBlockSingletonForType(Block.Type.DIRT),
+                renderer.registry.getBlockSingletonForType(Block.Type.WOOD),
+                renderer.registry.getBlockSingletonForType(Block.Type.LOGS),
+                renderer.registry.getBlockSingletonForType(Block.Type.LEAF),
+                renderer.registry.getBlockSingletonForType(Block.Type.SAND),
+                renderer.registry.getBlockSingletonForType(Block.Type.GRASS),
                 null,
                 null
         };

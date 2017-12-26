@@ -18,7 +18,7 @@ public class Chunk {
 
     private final ArrayList<Entity> entities;
 
-    final World world;
+    public final World world;
 
     public static final int chunkSize = 16;
     static final int chunkHeight = 128;

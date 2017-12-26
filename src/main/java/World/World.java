@@ -16,7 +16,7 @@ public class World {
 
     final TerrainGenerator terrainGenerator;
 
-    final Renderer renderer;
+    public final Renderer renderer;
     public final Random generalPurposeRandom;
     private final BlockTextures blockTextures;
 
@@ -35,7 +35,7 @@ public class World {
         chunks = new ArrayList<Chunk>();
         loaders = new ArrayList<ChunkLoader>();
         generalPurposeRandom = new Random((long) (seed * 100));
-        blockTextures = new BlockTextures();
+        blockTextures = new BlockTextures(renderer.registry);
     }
 
     public void loadTexture() {

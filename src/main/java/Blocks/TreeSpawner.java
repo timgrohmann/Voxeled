@@ -8,4 +8,9 @@ public class TreeSpawner extends Block {
     public TreeSpawner(Vector3 pos, Chunk chunk) {
         super(pos, Type.__TREE_SPAWNER, chunk);
     }
+
+    @Override
+    public void registerTextures() {
+        //No textures here
+    }
 }

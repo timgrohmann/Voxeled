@@ -3,6 +3,7 @@ package Entities;
 import Blocks.*;
 import GL_Math.Vector3;
 import Models.*;
+import Registry.BlockRegistry;
 import Textures.Texture;
 import World.Chunk;
 
@@ -29,6 +30,15 @@ abstract public class Block extends DrawableEntity implements Collidable {
         this.chunk = chunk;
         this.model = new CubeModel();
         this.type = type;
+
+        if (chunk != null) {
+            BlockRegistry registry = chunk.world.renderer.registry;
+            Block singleton = registry.getBlockSingletonForType(type);
+            topTexture = singleton.topTexture;
+            sideTexture = singleton.sideTexture;
+            bottomTexture = singleton.bottomTexture;
+            transparent = singleton.transparent;
+        }
     }
 
     public static Block fromByte(Vector3 pos, byte typeByte, Chunk chunk) {
@@ -45,19 +55,22 @@ abstract public class Block extends DrawableEntity implements Collidable {
         return newType.createInstance(pos, chunk);
     }
 
-    protected void loadTextures(int topIndex, int sideIndex, int bottomIndex, boolean transparent) {
-        topTexture = new Texture(topIndex);
-        sideTexture = new Texture(sideIndex);
-        bottomTexture = new Texture(bottomIndex);
+    public abstract void registerTextures();
+
+    protected void loadTextures(String topName, String sideName, String bottomName, boolean transparent) {
+        topTexture = new Texture(topName);
+        sideTexture = new Texture(sideName);
+        bottomTexture = new Texture(bottomName);
 
         this.transparent = transparent;
     }
-    protected void loadTextures(int allIndex, boolean transparent) {
-        topTexture = sideTexture = bottomTexture = new Texture(allIndex);
+    protected void loadTextures(String allName, boolean transparent) {
+        topTexture = sideTexture = bottomTexture = new Texture(allName);
         this.transparent = transparent;
     }
-    protected void loadTextures(int allIndex) {
-        loadTextures(allIndex,false);
+
+    protected void loadTextures(String allName) {
+        loadTextures(allName,false);
     }
 
     public int vertexCount() {

@@ -4,6 +4,7 @@ import Entities.Entity;
 import GL_Math.Matrix4;
 import GL_Math.Vector3;
 import GUI.GUIDrawer;
+import Registry.BlockRegistry;
 import Shader.WaterShaderProgram;
 import Shader.WorldShaderProgram;
 import World.World;
@@ -29,6 +30,7 @@ public class Renderer {
     public WaterShaderProgram waterShader;
     public final Game_IO gameIO;
     public final Camera camera;
+    public final BlockRegistry registry;
     GUIDrawer guiDrawer;
     public Player player;
     private SkyBox skyBox;
@@ -59,9 +61,12 @@ public class Renderer {
         gameIO = new Game_IO(this);
         camera = new Camera(new Vector3(4 * 16,200,4 * 16),0,-0.25f);
 
+        registry = new BlockRegistry();
+
         world = new World(100, this);
 
         player = Player.fromFile("0", this);
+
     }
 
     public void start() {
@@ -109,6 +114,8 @@ public class Renderer {
         program.setUniformVector("light_dir", lightDirection);
 
         matLocation = program.uniformLocation("mat");
+
+
 
 
         /*  * * * * * * * * *

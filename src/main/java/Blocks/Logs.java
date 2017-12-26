@@ -7,6 +7,10 @@ import World.Chunk;
 public class Logs extends Block{
     public Logs(Vector3 pos, Chunk chunk) {
         super(pos, Type.LOGS, chunk);
-        loadTextures(4);
+    }
+
+    @Override
+    public void registerTextures() {
+        loadTextures("planks_oak");
     }
 }

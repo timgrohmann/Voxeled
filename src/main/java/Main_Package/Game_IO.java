@@ -13,6 +13,7 @@ public class Game_IO {
 
     private final Renderer renderer;
 
+
     public int selectedSlot = 0;
     private double scrollState = 0;
 

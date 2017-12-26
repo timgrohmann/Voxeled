@@ -11,13 +11,17 @@ public class Vertex {
     public final float u;
     public final float v;
 
+    public final int layer;
+
     public Vertex(ModelVertex modelVertex, Vector3 position, Model model, Texture texture) {
         this.x = modelVertex.x + position.x - model.center.x;
         this.y = modelVertex.y + position.y - model.center.y;
         this.z = modelVertex.z + position.z - model.center.z;
 
-        this.u = texture.convertedU(modelVertex.u);
-        this.v = texture.convertedV(modelVertex.v);
+        this.u = modelVertex.u;
+        this.v = modelVertex.v;
+
+        this.layer = texture.layer;
     }
 
     public Vertex(Vector3 modelVertex, Vector3 position, Model model) {
@@ -27,5 +31,7 @@ public class Vertex {
 
         this.u = 0;
         this.v = 0;
+
+        this.layer = -1;
     }
 }

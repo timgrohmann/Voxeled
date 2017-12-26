@@ -7,6 +7,10 @@ import World.Chunk;
 public class Wood extends Block {
     public Wood(Vector3 pos, Chunk chunk) {
         super(pos, Type.WOOD, chunk);
-        loadTextures(21,20,21,false);
+    }
+
+    @Override
+    public void registerTextures() {
+        loadTextures("log_oak_top", "log_oak", "log_oak_top", false);
     }
 }
