@@ -7,6 +7,10 @@ import World.Chunk;
 public class Leaf extends Block {
     public Leaf(Vector3 pos, Chunk chunk) {
         super(pos, Type.LEAF, chunk);
-        loadTextures(52, false);
+    }
+
+    @Override
+    public void registerTextures() {
+        loadTextures("leaves_oak", false, true);
     }
 }

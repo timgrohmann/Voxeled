@@ -1,36 +1,23 @@
 package Textures;
 
-public class Texture {
-    private final int posX;
-    private final int posY;
+import GL_Math.Vector3;
 
-    private String name = "NO_NAME";
+public class Texture{
+    public int layer = -1;
 
-    private static final int horizontalTexCount = 16;
-    private static final int verticalTexCount = 16;
+    public final String name;
+    public final Vector3 blendColor;
 
-    public Texture(int posX, int posY, String name) {
-        this.posX = posX;
-        this.posY = posY;
-        this.name = name;
+    public Texture(String s, boolean foliage) {
+        name = s;
+        if (foliage) {
+            blendColor = new Vector3(0.2f,0.8f,0.1f);
+        } else {
+            blendColor = new Vector3(1,1,1);
+        }
     }
 
-    public Texture(int posX, int posY) {
-        this.posX = posX;
-        this.posY = posY;
+    public Texture(String name) {
+        this(name,false);
     }
-
-    public Texture(int index) {
-        this.posY = index / 16;
-        this.posX = index - posY * 16;
-    }
-
-    public float convertedU(float u) {
-        return ((float) posX + u)/ horizontalTexCount;
-    }
-    public float convertedV(float v) {
-        return ((float) posY + v)/ verticalTexCount;
-    }
-
-
 }

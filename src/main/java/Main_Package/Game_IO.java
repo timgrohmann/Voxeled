@@ -13,6 +13,7 @@ public class Game_IO {
 
     private final Renderer renderer;
 
+
     public int selectedSlot = 0;
     private double scrollState = 0;
 
@@ -111,9 +112,9 @@ public class Game_IO {
         }
 
         if (selected != null && mouseRightJustPressed) {
-            Block.Type t = renderer.player.inventory()[selectedSlot].type;
+            Block t = renderer.player.inventory()[selectedSlot];
             if (t != null){
-                renderer.world.setBlockForCoordinates(t, selected.getXPos() + xDif, selected.getYPos() + yDif, selected.getZPos() + zDif);
+                renderer.world.setBlockForCoordinates(t.type, selected.getXPos() + xDif, selected.getYPos() + yDif, selected.getZPos() + zDif);
             }
         }
     }

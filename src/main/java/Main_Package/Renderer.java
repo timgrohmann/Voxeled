@@ -4,6 +4,7 @@ import Entities.Entity;
 import GL_Math.Matrix4;
 import GL_Math.Vector3;
 import GUI.GUIDrawer;
+import Registry.BlockRegistry;
 import Shader.WaterShaderProgram;
 import Shader.WorldShaderProgram;
 import World.World;
@@ -23,12 +24,13 @@ public class Renderer {
 
     private final ArrayList<Entity> entities;
 
-    final World world;
+    public final World world;
 
-    public WorldShaderProgram program;
+    public WorldShaderProgram worldShader;
     public WaterShaderProgram waterShader;
     public final Game_IO gameIO;
     public final Camera camera;
+    public final BlockRegistry registry;
     GUIDrawer guiDrawer;
     public Player player;
     private SkyBox skyBox;
@@ -59,9 +61,12 @@ public class Renderer {
         gameIO = new Game_IO(this);
         camera = new Camera(new Vector3(4 * 16,200,4 * 16),0,-0.25f);
 
+        registry = new BlockRegistry();
+
         world = new World(100, this);
 
         player = Player.fromFile("0", this);
+
     }
 
     public void start() {
@@ -89,7 +94,7 @@ public class Renderer {
 
 
         try {
-            program =  new WorldShaderProgram();
+            worldShader =  new WorldShaderProgram();
             waterShader = new WaterShaderProgram();
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,7 +103,7 @@ public class Renderer {
 
         skyBox = new SkyBox();
         guiDrawer = new GUIDrawer(this);
-        program.use();
+        worldShader.use();
 
 
 
@@ -106,9 +111,11 @@ public class Renderer {
 
 
         Vector3 lightDirection = new Vector3(2,100,1);
-        program.setUniformVector("light_dir", lightDirection);
+        worldShader.setUniformVector("light_dir", lightDirection);
 
-        matLocation = program.uniformLocation("mat");
+        matLocation = worldShader.uniformLocation("mat");
+
+
 
 
         /*  * * * * * * * * *
@@ -170,6 +177,10 @@ public class Renderer {
 
     public int chunkLoadedCount() {
         return world.chunks.size();
+    }
+
+    public void activateBlockTextures() {
+        world.blockTextures.activateTextures();
     }
 
 }

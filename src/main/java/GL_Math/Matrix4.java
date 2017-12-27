@@ -105,8 +105,8 @@ public class Matrix4 {
 
     public static Matrix4 guiMatrix(float scal, float aspect) {
         return new Matrix4(new float[]{
-                scal,0,0,0,
-                0,scal * aspect,0,0,
+                scal / aspect,0,0,0,
+                0,scal,0,0,
                 0,0,1,0,
                 0,0,0,1,
         });

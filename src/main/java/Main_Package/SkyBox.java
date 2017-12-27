@@ -49,10 +49,10 @@ class SkyBox {
 
     public void render(Matrix4 matrix4, Vector3 playerPos) {
         skyBoxShaderProgram.use();
-        angle += 0.0001;
+        //angle += 0.003;
 
         skyBoxShaderProgram.setUniformMatrix("mat", matrix4);
-        skyBoxShaderProgram.setUniformMatrix("rotMat", Matrix4.rotationMatrixY(angle));
+        skyBoxShaderProgram.setUniformFloat("timeAngle",angle);
         skyBoxShaderProgram.setUniformInt("texture_cube",2);
         skyBoxShaderProgram.setUniformVector("player_Pos", playerPos);
         skyBoxTexture.activateTextures();

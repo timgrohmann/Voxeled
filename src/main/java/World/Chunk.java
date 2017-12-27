@@ -18,7 +18,7 @@ public class Chunk {
 
     private final ArrayList<Entity> entities;
 
-    final World world;
+    public final World world;
 
     public static final int chunkSize = 16;
     static final int chunkHeight = 128;
@@ -154,7 +154,7 @@ public class Chunk {
     private void load() {
         testVisible();
 
-        arrayBuffer = new BlockABO(world.renderer.program);
+        arrayBuffer = new BlockABO(world.renderer.worldShader);
         Vertex[] vertices = getVertices();
         arrayBuffer.load(vertices);
         arrayBuffer.loadAttributePointers();

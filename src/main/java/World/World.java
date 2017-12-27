@@ -16,9 +16,9 @@ public class World {
 
     final TerrainGenerator terrainGenerator;
 
-    final Renderer renderer;
+    public final Renderer renderer;
     public final Random generalPurposeRandom;
-    private final BlockTextures blockTextures;
+    public final BlockTextures blockTextures;
 
     private int currentCenterX;
     private int currentCenterY;
@@ -35,7 +35,7 @@ public class World {
         chunks = new ArrayList<Chunk>();
         loaders = new ArrayList<ChunkLoader>();
         generalPurposeRandom = new Random((long) (seed * 100));
-        blockTextures = new BlockTextures();
+        blockTextures = new BlockTextures(renderer.registry);
     }
 
     public void loadTexture() {
@@ -81,9 +81,9 @@ public class World {
      * @param mat transformation matrix to use
      */
     public void render(Matrix4 mat){
-        renderer.program.use();
-        renderer.program.setUniformVector("light_dir", renderer.camera.getLightPos());
-        renderer.program.setUniformMatrix("mat",mat);
+        renderer.worldShader.use();
+        renderer.worldShader.setUniformVector("light_dir", renderer.camera.getLightPos());
+        renderer.worldShader.setUniformMatrix("mat",mat);
         blockTextures.activateTextures();
 
 
