@@ -18,6 +18,8 @@ abstract public class Block extends DrawableEntity implements Collidable {
     private Texture sideTexture = null;
     private Texture bottomTexture = null;
 
+    public boolean shouldUpdate = false;
+
     public final Chunk chunk;
     private CubeModel model;
 
@@ -178,7 +180,10 @@ abstract public class Block extends DrawableEntity implements Collidable {
         return list;
     }
 
-    public void tick() {}
+    public void tick() {
+        shouldUpdate = false;
+        System.out.format("tick called on %s %n", this);
+    }
 
     /**
      * Handles left-click
@@ -203,7 +208,8 @@ abstract public class Block extends DrawableEntity implements Collidable {
         SAND (7, Sand.class),
         __TREE_SPAWNER (8, TreeSpawner.class),
         WATER (9, Water.class),
-        BEDROCK (10, Bedrock.class);
+        BEDROCK (10, Bedrock.class),
+        GRAVEL(11, Gravel.class);
 
         final byte store_value;
 
@@ -277,13 +283,17 @@ abstract public class Block extends DrawableEntity implements Collidable {
     public Texture getTopTexture() {
         return topTexture;
     }
-
     public Texture getSideTexture() {
         return sideTexture;
     }
-
     public Texture getBottomTexture() {
         return bottomTexture;
+    }
+
+    public void setTextures(Texture topTexture, Texture sideTexture, Texture bottomTexture) {
+        this.topTexture = topTexture;
+        this.sideTexture = sideTexture;
+        this.bottomTexture = bottomTexture;
     }
 
     public boolean shouldMakeVertices() {

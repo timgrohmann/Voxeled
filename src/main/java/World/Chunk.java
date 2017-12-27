@@ -16,8 +16,6 @@ import java.util.ArrayList;
 public class Chunk {
     private Block[] blocks;
 
-    private final ArrayList<Entity> entities;
-
     public final World world;
 
     public static final int chunkSize = 16;
@@ -28,6 +26,7 @@ public class Chunk {
 
     boolean willUnload = false;
     private boolean shouldReload = false;
+    public boolean shouldUpdate;
     private boolean addedStructures = false;
 
     private BlockABO arrayBuffer;
@@ -37,7 +36,6 @@ public class Chunk {
         this.world = world;
         this.xOff = xOff;
         this.zOff = zOff;
-        this.entities = new ArrayList<>();
         generate();
         load();
     }
@@ -46,7 +44,6 @@ public class Chunk {
         this.world = world;
         this.xOff = xPos;
         this.zOff = zPos;
-        this.entities = new ArrayList<>();
         //Load from bytes
         blocks = new Block[blockCount()];
         assert(bytes.length == blocks.length);
@@ -166,10 +163,13 @@ public class Chunk {
 
     void tick() {
         reload(false);
+        if (!shouldUpdate) return;
         for (Block b: blocks) {
-            if (b == null) continue;
-            b.tick();
+            if (b != null && b.shouldUpdate) {
+                b.tick();
+            }
         }
+        shouldUpdate = false;
     }
 
     /**
@@ -311,6 +311,8 @@ public class Chunk {
         blocks[indexForPosition((int) block.getPos().x - xOff * Chunk.chunkSize,(int) block.getPos().y,(int) block.getPos().z - zOff * Chunk.chunkSize)] = null;
 
         shouldReload = true;
+        shouldUpdate = true;
+        world.updateBlocksAround(block.getPos());
         changesToBlock(block);
     }
 

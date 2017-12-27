@@ -20,7 +20,7 @@ void main(void) {
 
     //col = (clamp(dot(normalize(in_Normal), normalize(light_dir - in_Position)), 0, 1) * 0.8 + 0.2) * color;
 
-    lightness = (clamp(dot(normalize(in_Normal), normalize(light_dir - in_Position)), 0, 1) * (1-diff_light) + diff_light);
+    lightness = (clamp(dot(normalize(in_Normal), normalize(light_dir)), 0, 1) * (1-diff_light) + diff_light);
     UVW = in_UVW;
     blendColor = in_BlendColor;
 }

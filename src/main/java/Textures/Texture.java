@@ -11,7 +11,7 @@ public class Texture{
     public Texture(String s, boolean foliage) {
         name = s;
         if (foliage) {
-            blendColor = new Vector3(0.2f,0.8f,0.1f);
+            blendColor = new Vector3(0.3f,0.7f,0f);
         } else {
             blendColor = new Vector3(1,1,1);
         }

@@ -44,7 +44,8 @@ public class Player extends Entity implements Collidable{
         hitBox = new HitBox(new Vector3(0.8f,1.8f,0.8f), this, new Vector3(0,0.9f,0));
     }
 
-    void update() {
+    @Override
+    public void update() {
         // Gravity
 
         keyInput();
@@ -223,8 +224,8 @@ public class Player extends Entity implements Collidable{
                 renderer.registry.getBlockSingletonForType(Block.Type.LEAF),
                 renderer.registry.getBlockSingletonForType(Block.Type.SAND),
                 renderer.registry.getBlockSingletonForType(Block.Type.GRASS),
-                null,
-                null
+                renderer.registry.getBlockSingletonForType(Block.Type.GRAVEL),
+                renderer.registry.getBlockSingletonForType(Block.Type.WATER),
         };
     }
 

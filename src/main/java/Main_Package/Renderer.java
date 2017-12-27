@@ -110,7 +110,7 @@ public class Renderer {
         world.loadTexture();
 
 
-        Vector3 lightDirection = new Vector3(2,100,1);
+        Vector3 lightDirection = new Vector3(2,5,1);
         worldShader.setUniformVector("light_dir", lightDirection);
 
         matLocation = worldShader.uniformLocation("mat");
@@ -152,6 +152,7 @@ public class Renderer {
 
         world.render(mat);
         world.renderWater(mat);
+        world.renderEntities(mat);
         skyBox.render(mat, player.getPos());
 
         guiDrawer.render3D(mat);

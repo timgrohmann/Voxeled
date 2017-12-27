@@ -5,7 +5,7 @@ import Models.Model;
 import Models.Vertex;
 
 abstract public class DrawableEntity extends Entity {
-    abstract Vertex[] getVertices();
+    public abstract Vertex[] getVertices();
     abstract int vertexCount();
 
     protected DrawableEntity(Vector3 pos) {
