@@ -5,7 +5,7 @@ import Shader.GUITextured2DShaderProgram;
 import org.lwjgl.opengl.GL20;
 
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
@@ -20,6 +20,7 @@ public class Triangle2DABO extends ArrayBufferObject {
     }
 
     public void load(GUITexturedVertex[] vertices) {
+        bind();
         float[] vals = new float[vertices.length * 4];
         vertexCount = vertices.length;
 
@@ -35,7 +36,7 @@ public class Triangle2DABO extends ArrayBufferObject {
         loadAttributePointers();
     }
 
-    public void load(ArrayList<GUITexturedVertex> vertices) {
+    public void load(List<GUITexturedVertex> vertices) {
         GUITexturedVertex[] arr = new GUITexturedVertex[vertices.size()];
         arr = vertices.toArray(arr);
         load(arr);

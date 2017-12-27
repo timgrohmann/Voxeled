@@ -1,71 +1,65 @@
 package GUI;
 
+import GL_Math.Vector2;
 import Models.GUITexturedVertex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
-class GUIText {
+class GUIText extends UIComponent {
 
-    private GUITexturedVertex[] textVertices;
-    private float xPos;
-    private float yPos;
-    private final float size;
-    private final ArrayList<GUITexturedVertex> vertices;
+    private String text;
 
-    public GUIText(String text, float x, float y, float size, boolean centered) {
+    public GUIText(String text, Vector2 pos, float letterHeight, boolean centered) {
+        super(pos,new Vector2(letterHeight * text.length(), letterHeight), centered);
 
-        vertices = new ArrayList<>();
 
-        xPos = x;
-        yPos = y;
-        this.size = size;
+        this.text = text;
 
-        if (centered) {
-            xPos -= size / 2 * text.length();
-            yPos += size / 2;
-        }
+    }
+
+    @Override
+    void generateVertices() {
+        ArrayList<GUITexturedVertex> vertexArrayList = new ArrayList<>();
 
         for (int i = 0; i < text.length(); i++) {
             char c = text.charAt(i);
             if (c >= 65 && c <= 90) {
                 //Uppercase letter
                 int letterIndex = c - 65;
-                addChar(i, letterIndex,0);
+                addChar(i, letterIndex,0, vertexArrayList);
             }
             if (c >= 97 && c <= 122) {
                 //Uppercase letter
                 int letterIndex = c - 97;
-                addChar(i,letterIndex,1);
+                addChar(i,letterIndex,1, vertexArrayList);
             }
             if (c >= 48 && c <= 57) {
                 //Numbers
                 int letterIndex = c - 48 + 26;
-                addChar(i,letterIndex,0);
+                addChar(i,letterIndex,0, vertexArrayList);
             }
             if (c == '?') {
                 int letterIndex = 27;
-                addChar(i,letterIndex,1);
+                addChar(i,letterIndex,1, vertexArrayList);
             }
             if (c == ':') {
                 int letterIndex = 37;
-                addChar(i,letterIndex,1);
+                addChar(i,letterIndex,1, vertexArrayList);
             }
             if (c == ',') {
-                addChar(i, 30,1);
+                addChar(i, 30,1, vertexArrayList);
             }
         }
 
-        textVertices = new GUITexturedVertex[vertices.size()];
-        textVertices = vertices.toArray(textVertices);
+        vertices = new GUITexturedVertex[vertexArrayList.size()];
+        vertices = vertexArrayList.toArray(vertices);
     }
 
-    GUITexturedVertex[] getVertices() {
-        return textVertices;
-    }
-
-    private void addChar(int i, int col, int row) {
-        vertices.addAll(Arrays.asList(texQuadAspectAndPixel(xPos + i * size, yPos, size, 16 * col, 16 * (col + 1), row * 16,(row + 1) * 16)));
+    private void addChar(int i, int col, int row, List<GUITexturedVertex> list) {
+        //noinspection SuspiciousNameCombination
+        list.addAll(Arrays.asList(texQuadAspectAndPixel(pos.x + i * this.size.y, pos.y, this.size.y, 16 * col, 16 * (col + 1), row * 16,(row + 1) * 16)));
     }
 
     private static GUITexturedVertex[] texQuadAspectAndPixel(float minX, float minY, float xWidth, float pixUStart, float pixUEnd, float pixVStart, float pixVEnd) {
@@ -78,6 +72,6 @@ class GUIText {
         float maxU = pixUEnd / texW;
         float maxV = pixVEnd / texH;
 
-        return GUIDrawer.texQuad(minX,minY,minU,minV,maxX,maxY,maxU,maxV);
+        return UIComponent.texQuadNormalized(minX,minY,minU,minV,maxX,maxY,maxU,maxV);
     }
 }

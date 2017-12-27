@@ -1,32 +1,26 @@
 package GUI;
 
+import GL_Math.Vector2;
 import Models.GUITexturedVertex;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-class GUIButton {
-    private final float midX;
-    private final float midY;
-
-    ArrayList<GUITexturedVertex> buttonVertices;
+class GUIButton extends UIBasicTexturedComponent{
 
     private final GUIText guiText;
 
-    public GUIButton(float midX, float midY, String text) {
-        this.midX = midX;
-        this.midY = midY;
+    private static Vector2 UV_ORIGIN = new Vector2(0,46);
+    private static Vector2 UV_SIZE = new Vector2(200,21);
 
-        guiText = new GUIText(text,midX,midY,0.08f,true);
+    public GUIButton(Vector2 pos, float width, String text) {
+        super(pos, width, true, UV_ORIGIN, UV_SIZE);
 
-        generateButtonVertices();
+        guiText = new GUIText(text,this.centerPos(),0.08f,true);
+
     }
 
-    private void generateButtonVertices() {
-        buttonVertices = new ArrayList<>(Arrays.asList(GUIDrawer.texQuadAspectAndPixelCenter(0,0,1.6f,0,200,46,66)));
-    }
-
-    GUITexturedVertex[] getTextVertices() {
-        return guiText.getVertices();
+    GUIText getText() {
+        return guiText;
     }
 }
