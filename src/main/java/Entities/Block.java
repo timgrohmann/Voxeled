@@ -109,7 +109,8 @@ abstract public class Block extends DrawableEntity implements Collidable {
         BEDROCK (10, Bedrock.class),
         GRAVEL(11, Gravel.class),
         PLANKS_SLAB(12, PlanksSlab.class),
-        TORCH(13, Torch.class);
+        TORCH(13, Torch.class),
+        TEST_TYPE(14, TestBlock.class);;
 
         final byte store_value;
 
@@ -187,6 +188,8 @@ abstract public class Block extends DrawableEntity implements Collidable {
 
     @Override
     public HitBox getHitbox() {
-        return new HitBox(new Vector3(1f,1f,1f), this, new Vector3(0.5f,0.5f,0.5f));
+
+        //return new HitBox(new Vector3(0f,0f,0f), new Vector3(1f,0.5f,1f), this);
+        return model.hitBoxModel.linkedWith(this);
     }
 }

@@ -41,7 +41,7 @@ public class Player extends Entity implements Collidable{
 
         speed = Vector3.zero();
         acc = Vector3.zero();
-        hitBox = new HitBox(new Vector3(0.8f,1.8f,0.8f), this, new Vector3(0,0.9f,0));
+        hitBox = new HitBox(new Vector3(-0.4f,0,-0.4f), new Vector3(0.4f,1.8f,0.4f), this);
     }
 
     @Override
@@ -217,7 +217,7 @@ public class Player extends Entity implements Collidable{
 
     public Block[] inventory() {
         return new Block[]{
-                renderer.registry.getBlockSingletonForType(Block.Type.STONE),
+                renderer.registry.getBlockSingletonForType(Block.Type.TEST_TYPE),
                 renderer.registry.getBlockSingletonForType(Block.Type.DIRT),
                 renderer.registry.getBlockSingletonForType(Block.Type.WOOD),
                 renderer.registry.getBlockSingletonForType(Block.Type.PLANKS),

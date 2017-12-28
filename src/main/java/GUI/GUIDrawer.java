@@ -105,7 +105,8 @@ public class GUIDrawer {
         guiTextured2DShaderProgram.setUniformFloat("aspect", renderer.getWindow().getAspectRatio());
         guiTextured2DShaderProgram.setUniformInt("texture_diffuse", 1);
 
-        renderer.setDepthTest(false);
+        Renderer.setDepthTest(false);
+        Renderer.setFaceCulling(false);
 
         mainGuiBuffer.load(mainVertices);
         guiTexture.activateMainTextures();
@@ -135,7 +136,8 @@ public class GUIDrawer {
         inventroyBlockABO.load(vertices1);
         inventroyBlockABO.render();
 
-        renderer.setDepthTest(true);
+        Renderer.setDepthTest(true);
+        Renderer.setFaceCulling(true);
     }
 
     private void renderComponent(UIBasicTexturedComponent component) {

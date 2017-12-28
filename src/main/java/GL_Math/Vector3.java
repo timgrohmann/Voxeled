@@ -26,6 +26,8 @@ public class Vector3 {
     public static Vector3 zero (){
         return new Vector3(0,0,0);
     }
+    public static Vector3 max () {return new Vector3(Float.POSITIVE_INFINITY,Float.POSITIVE_INFINITY,Float.POSITIVE_INFINITY);}
+    public static Vector3 min () {return new Vector3(Float.NEGATIVE_INFINITY,Float.NEGATIVE_INFINITY,Float.NEGATIVE_INFINITY);}
 
     public static Vector3 crossProduct(Vector3 v1, Vector3 v2) {
         return new Vector3(

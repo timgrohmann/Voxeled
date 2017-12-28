@@ -15,8 +15,8 @@ public class Torch extends Block {
         loadModel("block/normal_torch");
     }
 
-    @Override
+    /*@Override
     public HitBox getHitbox() {
         return null;
-    }
+    }*/
 }

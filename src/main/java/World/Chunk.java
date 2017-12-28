@@ -187,7 +187,7 @@ public class Chunk {
         arrayBuffer.load(vertices);
         arrayBuffer.loadAttributePointers();
 
-        waterArrayBuffer = new BlockABO(world.renderer.waterShader);
+        waterArrayBuffer = new BlockABO(world.renderer.worldShader);
         waterArrayBuffer.load(getTransparentVertices());
         waterArrayBuffer.loadAttributePointers();
     }

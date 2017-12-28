@@ -3,18 +3,15 @@ package Entities;
 import GL_Math.Vector3;
 
 public class HitBox {
-    Vector3 size;
-    Vector3 centerOffset;
+    Vector3 minCorner;
+    Vector3 maxCorner;
     Entity linkedEntity;
 
-    public HitBox(Vector3 size, Entity linkedEntity) {
-        this(size,linkedEntity,Vector3.zero());
-    }
 
-    public HitBox(Vector3 size, Entity linkedEntity, Vector3 centerOffset) {
-        this.size = size;
+    public HitBox(Vector3 minCorner, Vector3 maxCorner, Entity linkedEntity) {
+        this.minCorner = minCorner;
+        this.maxCorner = maxCorner;
         this.linkedEntity = linkedEntity;
-        this.centerOffset = centerOffset;
     }
 
     public CollisionResult checkCollision(HitBox otherHitBox) {
@@ -43,6 +40,7 @@ public class HitBox {
             float yCor = correctionForPosAndNegValues(penTop,penBottom);
             float zCor = correctionForPosAndNegValues(penFront,penBack);
 
+            if (yCor > 0f && yCor < 0.55f) return new CollisionResult(0,yCor * 0.4f,0);
 
             if (Math.abs(xCor) < Math.abs(yCor) && Math.abs(xCor) < Math.abs(zCor)) {
                 return new CollisionResult(xCor,0,0);
@@ -75,10 +73,10 @@ public class HitBox {
     }
 
     private Vector3 min() {
-        return linkedEntity.pos.added(centerOffset).added(size.multiplied(-0.5f));
+        return linkedEntity.pos.added(minCorner);
     }
     private Vector3 max() {
-        return linkedEntity.pos.added(centerOffset).added(size.multiplied(0.5f));
+        return linkedEntity.pos.added(maxCorner);
     }
 
 

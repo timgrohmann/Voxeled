@@ -51,6 +51,7 @@ class SkyBox {
         skyBoxShaderProgram.use();
         //angle += 0.003;
 
+        Renderer.setFaceCulling(false);
         skyBoxShaderProgram.setUniformMatrix("mat", matrix4);
         skyBoxShaderProgram.setUniformFloat("timeAngle",angle);
         skyBoxShaderProgram.setUniformInt("texture_cube",2);
@@ -58,6 +59,7 @@ class SkyBox {
         skyBoxTexture.activateTextures();
         skyBoxABO.bind();
         skyBoxABO.render();
+        Renderer.setFaceCulling(true);
     }
 
     private ArrayList<Vector3> quad(Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4) {

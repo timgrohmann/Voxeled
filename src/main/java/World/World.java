@@ -93,6 +93,7 @@ public class World {
      * @param mat transformation matrix to use
      */
     public void render(Matrix4 mat){
+        Renderer.setFaceCulling(true);
         renderer.worldShader.use();
         renderer.worldShader.setUniformVector("light_dir", renderer.camera.getLightPos());
         renderer.worldShader.setUniformMatrix("mat",mat);
@@ -109,9 +110,10 @@ public class World {
      * @param mat transformation matrix to use
      */
     public void renderWater(Matrix4 mat) {
-        renderer.waterShader.use();
-        renderer.waterShader.setUniformVector("light_dir", renderer.camera.getLightPos());
-        renderer.waterShader.setUniformMatrix("mat",mat);
+        Renderer.setFaceCulling(false);
+        renderer.worldShader.use();
+        renderer.worldShader.setUniformVector("light_dir", renderer.camera.getLightPos());
+        renderer.worldShader.setUniformMatrix("mat",mat);
         for (Chunk chunk: chunks){
             chunk.renderWater();
         }
@@ -340,8 +342,8 @@ public class World {
      * <b>Updates whole world</b>
      */
     public void tick() {
-        this.addNearChunksToLoadList(renderer.camera.getPosition(), 5);
-        this.unloadChunksOutsideOf(renderer.camera.getPosition(),7);
+        this.addNearChunksToLoadList(renderer.camera.getPosition(), 3);
+        this.unloadChunksOutsideOf(renderer.camera.getPosition(),5);
 
         this.loadOneChunk();
 

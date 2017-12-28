@@ -27,7 +27,6 @@ public class Renderer {
     public final World world;
 
     public WorldShaderProgram worldShader;
-    public WaterShaderProgram waterShader;
     public final Game_IO gameIO;
     public final Camera camera;
     public final BlockRegistry registry;
@@ -82,7 +81,7 @@ public class Renderer {
         glEnable(GL_DEPTH_TEST);
 
         glEnable(GL_LINE_SMOOTH);
-
+        glEnable(GL_CULL_FACE);
 
         //Enable alpha blending
         glEnable(GL_BLEND);
@@ -95,7 +94,6 @@ public class Renderer {
 
         try {
             worldShader =  new WorldShaderProgram();
-            waterShader = new WaterShaderProgram();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -168,11 +166,19 @@ public class Renderer {
         return window;
     }
 
-    public void setDepthTest(boolean enabled) {
+    public static void setDepthTest(boolean enabled) {
         if (enabled) {
             glEnable(GL_DEPTH_TEST);
         } else {
             glDisable(GL_DEPTH_TEST);
+        }
+    }
+
+    public static void setFaceCulling(boolean enabled) {
+        if (enabled) {
+            glEnable(GL_CULL_FACE);
+        } else {
+            glDisable(GL_CULL_FACE);
         }
     }
 
