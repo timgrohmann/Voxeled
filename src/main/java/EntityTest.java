@@ -8,12 +8,7 @@ public class EntityTest {
     }
 
     public void runTest() {
-        EntityModelLoader loader = new EntityModelLoader();
-        try {
-            EntityModel model = loader.loadFromEntityFile("block/stone");
-            System.out.println(model);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        EntityModel model = new EntityModelLoader().loadModel("block/stone");
+        System.out.println(model);
     }
 }

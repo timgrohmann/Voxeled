@@ -9,7 +9,9 @@ in float lightness;
 out vec4 colorOut;
 void main()
 {
-    vec4 col = texture(texture_array, UVW) * vec4(blendColor, 1.0) * lightness;
-    col.a = 1;
+    vec4 col = texture(texture_array, UVW) * vec4(blendColor, 1.0);
+    col.rgb = col.rgb * lightness;
+    if (col.a == 0) discard;
+    //col.a = 1;
     colorOut = col;
 }

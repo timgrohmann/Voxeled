@@ -9,6 +9,7 @@ import GL_Math.Matrix4;
 import GL_Math.Vector2;
 import GL_Math.Vector3;
 import Main_Package.Renderer;
+import Models.CuboidFace;
 import Models.GUITexturedVertex;
 import Models.GUIVertex;
 import Models.Vertex;
@@ -20,6 +21,7 @@ import Textures.Texture;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class GUIDrawer {
@@ -187,8 +189,18 @@ public class GUIDrawer {
     }
 
     private static Vertex[] blockDisplayQuad(int slot, Block block) {
-        Texture topTexture = block.getTopTexture();
-        Texture sideTexture = block.getSideTexture();
+        Texture topTexture = null;
+        Texture sideTexture = null;
+
+        Collection<CuboidFace> textures = block.model.getCuboidModels()[0].getFaces();
+
+        for (CuboidFace face: textures) {
+            if (face.face == CuboidFace.Face.TOP) topTexture = face.texture;
+            if (face.face == CuboidFace.Face.LEFT) sideTexture = face.texture;
+        }
+
+        if (sideTexture == null || topTexture == null) return new Vertex[0];
+
         float h = 0.10f;
         float xMid = -0.8f + 0.2f * slot;
         float yMid = -0.85f;

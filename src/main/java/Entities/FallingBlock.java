@@ -12,7 +12,7 @@ public class FallingBlock extends Block {
 
     @Override
     public void registerTextures() {
-        setTextures(blockClass.getTopTexture(), blockClass.getSideTexture(), blockClass.getBottomTexture());
+        loadModel(blockClass.model);
         transparent = blockClass.transparent;
     }
 

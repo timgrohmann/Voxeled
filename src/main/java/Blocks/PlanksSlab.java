@@ -5,14 +5,14 @@ import GL_Math.Vector3;
 import Models.Vertex;
 import World.Chunk;
 
-public class LogsSlab extends Block {
-    public LogsSlab(Vector3 pos, Chunk chunk) {
-        super(pos, Block.Type.LOGS, chunk);
+public class PlanksSlab extends Block {
+    public PlanksSlab(Vector3 pos, Chunk chunk) {
+        super(pos, Type.PLANKS_SLAB, chunk);
     }
 
     @Override
     public void registerTextures() {
-        loadTextures("planks_oak");
+        loadModel("block/planks_slab");
     }
 
     @Override

@@ -7,22 +7,31 @@ import org.json.*;
 import org.lwjgl.system.CallbackI;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class EntityModelLoader {
 
 
-    public EntityModel loadFromEntityFile(String entityName) throws JSONException {
+    public EntityModel loadModel(String modelName) {
+        try {
+            return loadFromEntityFile(modelName);
+        }catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private EntityModel loadFromEntityFile(String entityName) throws JSONException {
         JSONObject jsonObject = fileToJSONObject(entityName);
         jsonObject = loadDependecies(jsonObject);
 
-        System.out.println(jsonObject.toString());
         JSONArray elements = jsonObject.getJSONArray("elements");
 
         List<CuboidModel> cuboidModels = new ArrayList<>();
 
         JSONObject textures = jsonObject.getJSONObject("textures");
+
+        boolean transparent = jsonObject.optBoolean("transparent",false);
 
         for (int i = 0; i < elements.length(); i++) {
             JSONObject element = elements.getJSONObject(i);
@@ -32,7 +41,7 @@ public class EntityModelLoader {
 
         CuboidModel[] cuboidModelArray = new CuboidModel[cuboidModels.size()];
         cuboidModelArray = cuboidModels.toArray(cuboidModelArray);
-        return new EntityModel(cuboidModelArray);
+        return new EntityModel(cuboidModelArray, transparent);
     }
 
     private CuboidModel getModelFromJSONObject(JSONObject element, JSONObject textures) throws JSONException {
@@ -44,41 +53,47 @@ public class EntityModelLoader {
 
         JSONObject faces = element.getJSONObject("faces");
 
-        List<CuboidFace> faceList = new ArrayList<>();
+        CuboidModel newModel = new CuboidModel(origin,size);
+
+        Map<CuboidFace.Face, CuboidFace> faceMap = new HashMap<>();
+
         for (CuboidFace.Face faceType: CuboidFace.Face.values()) {
             JSONObject face = faces.optJSONObject(faceType.rawValue);
             if (face == null) continue;
             JSONArray uv = face.optJSONArray("uv");
             String textureKey = face.optString("texture");
             Texture texture = textureForKey(textureKey, textures);
-            boolean culling = face.optBoolean("culling", true);
+            boolean culling = face.optBoolean("cullface", false);
 
             if (uv == null) {
-                CuboidFace newFace = new CuboidFace(faceType, texture);
+                CuboidFace newFace = new CuboidFace(faceType, texture, newModel);
                 newFace.culling = culling;
-                faceList.add(newFace);
+                faceMap.put(faceType,newFace);
             } else {
                 Vector2 uvStart = new Vector2(uv.optDouble(0,0), uv.optDouble(1,0));
                 Vector2 uvEnd = new Vector2(uv.optDouble(2,16), uv.optDouble(3,16));
                 Vector2 uvSize = uvEnd.added(uvStart.multiplied(-1));
-                CuboidFace newFace = new CuboidFace(uvStart,uvSize,faceType, texture);
+                CuboidFace newFace = new CuboidFace(uvStart,uvSize,faceType, texture, newModel);
                 newFace.culling = culling;
-                faceList.add(newFace);
+                faceMap.put(faceType,newFace);
             }
         }
 
 
-        CuboidFace[] faceArray = new CuboidFace[faceList.size()];
-        faceArray = faceList.toArray(faceArray);
-        return new CuboidModel(origin,size,faceArray);
+        newModel.faces = faceMap;
+        return newModel;
     }
 
-    private static Texture textureForKey(String key, JSONObject lookup) {
+    private Texture textureForKey(String key, JSONObject lookup) {
         String textureName = textureLookUp(key, lookup);
-        return new Texture(textureName);
+        if (textureName.contains("&")) {
+            return new Texture(textureName.substring(0,textureName.length() - 1), true);
+        }else {
+            return new Texture(textureName);
+        }
     }
 
-    private static String textureLookUp(String key, JSONObject lookup) {
+    private String textureLookUp(String key, JSONObject lookup) {
 
         if (key.startsWith("#")) {
             String val = lookup.optString(key.substring(1));
@@ -90,7 +105,7 @@ public class EntityModelLoader {
 
     private JSONObject loadDependecies(JSONObject object) {
         String parentFile = object.optString("parent");
-        if (parentFile != null && parentFile != "") {
+        if (parentFile != null && !Objects.equals(parentFile, "")) {
             JSONObject parentObject = fileToJSONObject(parentFile);
             object.remove("parent");
             return loadDependecies(merge(parentObject,object));
@@ -125,6 +140,7 @@ public class EntityModelLoader {
 
     private JSONObject fileToJSONObject(String fileName){
         InputStream is = this.getClass().getResourceAsStream("/models/" + fileName + ".model");
+        if (is == null) System.err.format("%s not found!", fileName);
         String input = convertStreamToString(is);
         try {
             return new JSONObject(input);
@@ -135,7 +151,7 @@ public class EntityModelLoader {
         }
     }
 
-    private static String convertStreamToString(InputStream is) {
+    private String convertStreamToString(InputStream is) {
         java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
         return s.hasNext() ? s.next() : "";
     }

@@ -12,7 +12,7 @@ public class Sand extends GravityBlock {
 
     @Override
     public void registerTextures() {
-        loadTextures("sand");
+        loadModel("block/sand");
     }
 
 }

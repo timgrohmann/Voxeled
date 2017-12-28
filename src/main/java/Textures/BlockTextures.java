@@ -2,6 +2,9 @@ package Textures;
 
 import Entities.Block;
 import Main_Package.Log;
+import Models.CuboidFace;
+import Models.CuboidModel;
+import Models.EntityModel;
 import Registry.BlockRegistry;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
@@ -37,9 +40,14 @@ public class BlockTextures {
 
         for (Block block: allBlocks) {
             block.registerTextures();
-            if (block.getTopTexture() != null && !textures.contains(block.getTopTexture())) textures.add(block.getTopTexture());
-            if (block.getSideTexture() != null && !textures.contains(block.getSideTexture())) textures.add(block.getSideTexture());
-            if (block.getBottomTexture() != null && !textures.contains(block.getBottomTexture())) textures.add(block.getBottomTexture());
+            EntityModel model = block.model;
+            if (model == null) continue;
+            for (CuboidModel cuboidModel: model.getCuboidModels()) {
+                for (CuboidFace cuboidFace: cuboidModel.getFaces()) {
+                    Texture t = cuboidFace.getTexture();
+                    if (!textures.contains(t)) textures.add(t);
+                }
+            }
         }
 
         this.textures = new Texture[textures.size()];
@@ -62,7 +70,7 @@ public class BlockTextures {
 
 
         for (int i = 0; i < textures.length; i++) {
-            TextureLoader loader = TextureLoader.load("textures/PureBDcraft  16x MC112/assets/minecraft/textures/blocks/" + textures[i].name + ".png");
+            TextureLoader loader = TextureLoader.load("textures/PureBDcraft  16x MC112/assets/minecraft/textures/" + textures[i].name + ".png");
             glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, TEXTURE_SIZE, TEXTURE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, loader.buf);
 
             textures[i].layer = i;

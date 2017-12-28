@@ -345,7 +345,6 @@ public class World {
 
         this.loadOneChunk();
 
-
         for (Chunk chunk: chunks) chunk.tick();
 
         for (int i = entities.size() - 1; i >= 0; i--) {

@@ -10,7 +10,7 @@ public class Gravel extends GravityBlock{
 
     @Override
     public void registerTextures() {
-        loadTextures("gravel");
+        loadModel("block/gravel");
     }
 
 }

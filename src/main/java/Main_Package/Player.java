@@ -220,12 +220,12 @@ public class Player extends Entity implements Collidable{
                 renderer.registry.getBlockSingletonForType(Block.Type.STONE),
                 renderer.registry.getBlockSingletonForType(Block.Type.DIRT),
                 renderer.registry.getBlockSingletonForType(Block.Type.WOOD),
-                renderer.registry.getBlockSingletonForType(Block.Type.LOGS),
+                renderer.registry.getBlockSingletonForType(Block.Type.PLANKS),
                 renderer.registry.getBlockSingletonForType(Block.Type.LEAF),
                 renderer.registry.getBlockSingletonForType(Block.Type.SAND),
                 renderer.registry.getBlockSingletonForType(Block.Type.GRASS),
-                renderer.registry.getBlockSingletonForType(Block.Type.GRAVEL),
-                renderer.registry.getBlockSingletonForType(Block.Type.WATER),
+                renderer.registry.getBlockSingletonForType(Block.Type.TORCH),
+                renderer.registry.getBlockSingletonForType(Block.Type.PLANKS_SLAB),
         };
     }
 

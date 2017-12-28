@@ -4,24 +4,16 @@ import Blocks.*;
 import GL_Math.Vector3;
 import Models.*;
 import Registry.BlockRegistry;
-import Textures.Texture;
 import World.Chunk;
 
 import java.lang.reflect.Constructor;
 
 abstract public class Block extends DrawableEntity implements Collidable {
-    private boolean visibleTop = true, visibleBottom = true,
-            visibleLeft = true, visibleRight = true,
-            visibleBack = true, visibleFront = true;
-
-    private Texture topTexture = null;
-    private Texture sideTexture = null;
-    private Texture bottomTexture = null;
+    private Culling culling = new Culling(true);
 
     public boolean shouldUpdate = false;
 
     public final Chunk chunk;
-    private CubeModel model;
 
     public boolean transparent = false;
 
@@ -30,15 +22,12 @@ abstract public class Block extends DrawableEntity implements Collidable {
     protected Block(Vector3 pos, Type type, Chunk chunk) {
         super(pos);
         this.chunk = chunk;
-        this.model = new CubeModel();
         this.type = type;
 
         if (chunk != null) {
             BlockRegistry registry = chunk.world.renderer.registry;
             Block singleton = registry.getBlockSingletonForType(type);
-            topTexture = singleton.topTexture;
-            sideTexture = singleton.sideTexture;
-            bottomTexture = singleton.bottomTexture;
+            model = singleton.model;
             transparent = singleton.transparent;
         }
     }
@@ -59,130 +48,39 @@ abstract public class Block extends DrawableEntity implements Collidable {
 
     public abstract void registerTextures();
 
-    protected void loadTextures(String topName, String sideName, String bottomName, boolean transparent, boolean foliage) {
-        topTexture = new Texture(topName, foliage);
-        sideTexture = new Texture(sideName);
-        bottomTexture = new Texture(bottomName);
-
-        this.transparent = transparent;
-    }
-    protected void loadTextures(String allName, boolean transparent, boolean foliage) {
-        topTexture = sideTexture = bottomTexture = new Texture(allName,foliage);
-        this.transparent = transparent;
+    protected void loadModel(String modelName) {
+        loadModel(new EntityModelLoader().loadModel(modelName));
     }
 
-    protected void loadTextures(String allName) {
-        loadTextures(allName,false,false);
+    protected void loadModel(EntityModel model) {
+        this.model = model;
+        transparent = model.transparent;
     }
 
     public int vertexCount() {
-        return (visibleTop ? 6 : 0) + (visibleBottom ? 6 : 0) + (visibleLeft ? 6 : 0) + (visibleRight ? 6 : 0)
-                + (visibleFront ? 6 : 0) + (visibleBack ? 6 : 0);
+        if (model == null) return 0;
+        return model.getVertexCount(culling);
     }
 
     public Vertex[] getVertices() {
-        Vertex[] list = new Vertex[vertexCount()];
-        int currentPointer = 0;
+        if (model == null) return new Vertex[0];
+        ModelVertex[] modelVertices = model.getModelVertices(culling);
+        Vertex[] vertices = new Vertex[modelVertices.length];
 
-        if (visibleTop) {
-            ModelVertex[] modelVertices = BlockFaceModel.getVertices(BlockFaceModel.Side.TOP);
-            for (int i = 0; i < 6; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model,topTexture);
-                currentPointer++;
-            }
-        }
-        if (visibleBottom) {
-            ModelVertex[] modelVertices = BlockFaceModel.getVertices(BlockFaceModel.Side.BOTTOM);
-            for (int i = 0; i < 6; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model,bottomTexture);
-                currentPointer++;
-            }
-        }
-        if (visibleLeft) {
-            ModelVertex[] modelVertices = BlockFaceModel.getVertices(BlockFaceModel.Side.LEFT);
-            for (int i = 0; i < 6; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model,sideTexture);
-                currentPointer++;
-            }
-        }
-        if (visibleRight) {
-            ModelVertex[] modelVertices = BlockFaceModel.getVertices(BlockFaceModel.Side.RIGHT);
-            for (int i = 0; i < 6; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model,sideTexture);
-                currentPointer++;
-            }
-        }
-        if (visibleFront) {
-            ModelVertex[] modelVertices = BlockFaceModel.getVertices(BlockFaceModel.Side.FRONT);
-            for (int i = 0; i < 6; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model,sideTexture);
-                currentPointer++;
-            }
-        }
-        if (visibleBack) {
-            ModelVertex[] modelVertices = BlockFaceModel.getVertices(BlockFaceModel.Side.BACK);
-            for (int i = 0; i < 6; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model,sideTexture);
-                currentPointer++;
-            }
+        for (int i = 0; i < modelVertices.length; i++) {
+            ModelVertex modelVertex = modelVertices[i];
+            vertices[i] = new Vertex(modelVertex, pos, model);
         }
 
-        return list;
+        return vertices;
     }
 
     public Vertex[] getEdgeVertices() {
-        Vertex[] list = new Vertex[vertexCount() / 6 * 8];
-        int currentPointer = 0;
-
-        if (visibleTop) {
-            Vector3[] modelVertices = BlockFaceModel.getEdgeVertices(BlockFaceModel.Side.TOP);
-            for (int i = 0; i < 8; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model);
-                currentPointer++;
-            }
-        }
-        if (visibleBottom) {
-            Vector3[] modelVertices = BlockFaceModel.getEdgeVertices(BlockFaceModel.Side.BOTTOM);
-            for (int i = 0; i < 8; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model);
-                currentPointer++;
-            }
-        }
-        if (visibleLeft) {
-            Vector3[] modelVertices = BlockFaceModel.getEdgeVertices(BlockFaceModel.Side.LEFT);
-            for (int i = 0; i < 8; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model);
-                currentPointer++;
-            }
-        }
-        if (visibleRight) {
-            Vector3[] modelVertices = BlockFaceModel.getEdgeVertices(BlockFaceModel.Side.RIGHT);
-            for (int i = 0; i < 8; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model);
-                currentPointer++;
-            }
-        }
-        if (visibleFront) {
-            Vector3[] modelVertices = BlockFaceModel.getEdgeVertices(BlockFaceModel.Side.FRONT);
-            for (int i = 0; i < 8; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model);
-                currentPointer++;
-            }
-        }
-        if (visibleBack) {
-            Vector3[] modelVertices = BlockFaceModel.getEdgeVertices(BlockFaceModel.Side.BACK);
-            for (int i = 0; i < 8; i++) {
-                list[currentPointer] = new Vertex(modelVertices[i],this.pos,this.model);
-                currentPointer++;
-            }
-        }
-
-        return list;
+        return new Vertex[0];
     }
 
     public void tick() {
         shouldUpdate = false;
-        System.out.format("tick called on %s %n", this);
     }
 
     /**
@@ -201,15 +99,17 @@ abstract public class Block extends DrawableEntity implements Collidable {
     public enum Type {
         GRASS (1, Grass.class),
         STONE (2, Stone.class),
-        LOGS (3, Blocks.Logs.class),
+        PLANKS(3, Planks.class),
         DIRT (4, Dirt.class),
-        WOOD (5, Wood.class),
+        WOOD (5, Log.class),
         LEAF (6, Leaf.class),
         SAND (7, Sand.class),
         __TREE_SPAWNER (8, TreeSpawner.class),
         WATER (9, Water.class),
         BEDROCK (10, Bedrock.class),
-        GRAVEL(11, Gravel.class);
+        GRAVEL(11, Gravel.class),
+        PLANKS_SLAB(12, PlanksSlab.class),
+        TORCH(13, Torch.class);
 
         final byte store_value;
 
@@ -239,62 +139,47 @@ abstract public class Block extends DrawableEntity implements Collidable {
     }
 
     public void setVisibleTop(boolean visibleTop) {
-        this.visibleTop = visibleTop;
+        this.culling.top = visibleTop;
     }
     public void setVisibleBottom(boolean visibleBottom) {
-        this.visibleBottom = visibleBottom;
+        this.culling.bottom = visibleBottom;
     }
     public void setVisibleLeft(boolean visibleLeft) {
-        this.visibleLeft = visibleLeft;
+        this.culling.left = visibleLeft;
     }
     public void setVisibleRight(boolean visibleRight) {
-        this.visibleRight = visibleRight;
+        this.culling.right = visibleRight;
     }
     public void setVisibleBack(boolean visibleBack) {
-        this.visibleBack = visibleBack;
+        this.culling.back = visibleBack;
     }
     public void setVisibleFront(boolean visibleFront) {
-        this.visibleFront = visibleFront;
+        this.culling.front = visibleFront;
     }
 
     public boolean isVisibleTop() {
-        return visibleTop;
+        return culling.top;
     }
     public boolean isVisibleBottom() {
-        return visibleBottom;
+        return culling.bottom;
     }
     public boolean isVisibleLeft() {
-        return visibleLeft;
+        return culling.left;
     }
     public boolean isVisibleRight() {
-        return visibleRight;
+        return culling.right;
     }
     public boolean isVisibleBack() {
-        return visibleBack;
+        return culling.back;
     }
     public boolean isVisibleFront() {
-        return visibleFront;
+        return culling.front;
     }
 
     public int getXPos() {return (int) this.pos.x;}
     public int getYPos() {return (int) this.pos.y;}
     public int getZPos() {return (int) this.pos.z;}
 
-    public Texture getTopTexture() {
-        return topTexture;
-    }
-    public Texture getSideTexture() {
-        return sideTexture;
-    }
-    public Texture getBottomTexture() {
-        return bottomTexture;
-    }
-
-    public void setTextures(Texture topTexture, Texture sideTexture, Texture bottomTexture) {
-        this.topTexture = topTexture;
-        this.sideTexture = sideTexture;
-        this.bottomTexture = bottomTexture;
-    }
 
     public boolean shouldMakeVertices() {
         return this.type != Type.__TREE_SPAWNER;
