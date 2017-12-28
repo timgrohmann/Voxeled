@@ -7,9 +7,13 @@ import Registry.BlockRegistry;
 import World.Chunk;
 
 import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 abstract public class Block extends DrawableEntity implements Collidable {
+
     private Culling culling = new Culling(true);
+    public Map<String, Boolean> options = new HashMap<>();
 
     public boolean shouldUpdate = false;
 
@@ -59,12 +63,12 @@ abstract public class Block extends DrawableEntity implements Collidable {
 
     public int vertexCount() {
         if (model == null) return 0;
-        return model.getVertexCount(culling);
+        return model.getVertexCount(culling, options);
     }
 
     public Vertex[] getVertices() {
         if (model == null) return new Vertex[0];
-        ModelVertex[] modelVertices = model.getModelVertices(culling);
+        ModelVertex[] modelVertices = model.getModelVertices(culling, options);
         Vertex[] vertices = new Vertex[modelVertices.length];
 
         for (int i = 0; i < modelVertices.length; i++) {
@@ -74,6 +78,7 @@ abstract public class Block extends DrawableEntity implements Collidable {
 
         return vertices;
     }
+
 
     public Vertex[] getEdgeVertices() {
         return new Vertex[0];
@@ -110,7 +115,8 @@ abstract public class Block extends DrawableEntity implements Collidable {
         GRAVEL(11, Gravel.class),
         PLANKS_SLAB(12, PlanksSlab.class),
         TORCH(13, Torch.class),
-        TEST_TYPE(14, TestBlock.class);;
+        FENCE(14, Fence.class),
+        TEST_TYPE(250, TestBlock.class);
 
         final byte store_value;
 
@@ -156,6 +162,10 @@ abstract public class Block extends DrawableEntity implements Collidable {
     }
     public void setVisibleFront(boolean visibleFront) {
         this.culling.front = visibleFront;
+    }
+
+    public void setOptions(Map<String, Boolean> options) {
+        this.options = options;
     }
 
     public boolean isVisibleTop() {

@@ -15,17 +15,20 @@ public class CuboidFace extends Model {
     public Texture texture;
     public boolean culling = true;
 
+    private final int rotation;
+
     CuboidModel cuboidModel;
 
 
-    public CuboidFace(Vector2 uvOrigin, Vector2 uvSize, Face face, Texture texture, CuboidModel model) {
+    public CuboidFace(Vector2 uvOrigin, Vector2 uvSize, Face face, Texture texture, CuboidModel model, int rotation) {
         this.uvOrigin = uvOrigin.multiplied(1f/16);
         this.uvSize = uvSize.multiplied(1f/16);
         this.face = face;
         this.texture = texture;
         this.cuboidModel = model;
+        this.rotation = rotation;
 
-        Vector3[] corners;
+        Vector3[] corners = null;
 
         List<ModelVertex> vertexList = new ArrayList<>();
 
@@ -35,51 +38,68 @@ public class CuboidFace extends Model {
                         cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,0),
                         cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,cuboidModel.size.z),
                         cuboidModel.origin.added(0,cuboidModel.size.y,cuboidModel.size.z)};
-                vertexList.addAll(quadFromCorners(texturedVertices(corners)));
                 break;
             case BOTTOM:
                 corners = new Vector3[]{cuboidModel.origin.added(0,0,0),
                         cuboidModel.origin.added(0,0,cuboidModel.size.z),
                         cuboidModel.origin.added(cuboidModel.size.x,0,cuboidModel.size.z),
                         cuboidModel.origin.added(cuboidModel.size.x,0,0)};
-                vertexList.addAll(quadFromCorners(texturedVertices(corners)));
                 break;
             case LEFT:
                 corners = new Vector3[]{cuboidModel.origin.added(0,cuboidModel.size.y,0),
                         cuboidModel.origin.added(0,cuboidModel.size.y,cuboidModel.size.z),
                         cuboidModel.origin.added(0,0,cuboidModel.size.z),
                         cuboidModel.origin.added(0,0,0),};
-                vertexList.addAll(quadFromCorners(texturedVertices(corners)));
                 break;
             case RIGHT:
                 corners = new Vector3[]{cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,cuboidModel.size.z),
                         cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,0),
                         cuboidModel.origin.added(cuboidModel.size.x,0,0),
                         cuboidModel.origin.added(cuboidModel.size.x,0,cuboidModel.size.z)};
-                vertexList.addAll(quadFromCorners(texturedVertices(corners)));
                 break;
             case FRONT:
                 corners = new Vector3[]{cuboidModel.origin.added(0,cuboidModel.size.y,cuboidModel.size.z),
                         cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,cuboidModel.size.z),
                         cuboidModel.origin.added(cuboidModel.size.x,0,cuboidModel.size.z),
                         cuboidModel.origin.added(0,0,cuboidModel.size.z)};
-                vertexList.addAll(quadFromCorners(texturedVertices(corners)));
                 break;
             case BACK:
                 corners = new Vector3[]{cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,0),
                         cuboidModel.origin.added(0,cuboidModel.size.y,0),
                         cuboidModel.origin.added(0,0,0),
                         cuboidModel.origin.added(cuboidModel.size.x,0,0)};
-                vertexList.addAll(quadFromCorners(texturedVertices(corners)));
                 break;
         }
+
+        shiftByRotation(corners);
+        vertexList.addAll(quadFromCorners(texturedVertices(corners)));
+
 
         vertices = new ModelVertex[vertexList.size()];
         vertices = vertexList.toArray(vertices);
     }
 
-    public CuboidFace(Face face, Texture texture, CuboidModel model) {
-        this(Vector2.zero, new Vector2(16,16), face, texture, model);
+    private void shiftByRotation(Vector3[] in) {
+        if (rotation == 1) {
+            Vector3 temp = in[3];
+            in[3] = in[2];
+            in[2] = in[1];
+            in[1] = in[0];
+            in[0] = temp;
+        } else if (rotation == -1) {
+            Vector3 temp = in[0];
+            in[0] = in[1];
+            in[1] = in[2];
+            in[2] = in[3];
+            in[3] = temp;
+        } else if (rotation == 2 || rotation == -2) {
+            Vector3 temp1 = in[0];
+            Vector3 temp2 = in[1];
+            in[0] = in[2];
+            in[1] = in[3];
+            in[2] = temp1;
+            in[3] = temp2;
+        }
     }
 
     List<ModelVertex> texturedVertices(Vector3[] untexturedPositions) {

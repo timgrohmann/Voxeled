@@ -64,23 +64,37 @@ public class EntityModelLoader {
             String textureKey = face.optString("texture");
             Texture texture = textureForKey(textureKey, textures);
             boolean culling = face.optBoolean("cullface", false);
+            int rotation = face.optInt("rotation", 0);
 
-            if (uv == null) {
-                CuboidFace newFace = new CuboidFace(faceType, texture, newModel);
-                newFace.culling = culling;
-                faceMap.put(faceType,newFace);
-            } else {
-                Vector2 uvStart = new Vector2(uv.optDouble(0,0), uv.optDouble(1,0));
-                Vector2 uvEnd = new Vector2(uv.optDouble(2,16), uv.optDouble(3,16));
-                Vector2 uvSize = uvEnd.added(uvStart.multiplied(-1));
-                CuboidFace newFace = new CuboidFace(uvStart,uvSize,faceType, texture, newModel);
-                newFace.culling = culling;
-                faceMap.put(faceType,newFace);
+            Vector2 uvStart = new Vector2(0,0);
+            Vector2 uvEnd = new Vector2(16,16);
+
+            if (uv != null) {
+
+                uvStart.x = (float) uv.optDouble(0,0);
+                uvStart.y = (float) uv.optDouble(1,0);
+                uvEnd.x = (float) uv.optDouble(2,16);
+                uvEnd.y = (float) uv.optDouble(3,16);
             }
+
+            Vector2 uvSize = uvEnd.added(uvStart.multiplied(-1));
+
+            CuboidFace newFace = new CuboidFace(uvStart,uvSize,faceType, texture, newModel, rotation);
+            newFace.culling = culling;
+            faceMap.put(faceType,newFace);
         }
 
-
         newModel.faces = faceMap;
+
+        JSONObject iff = element.optJSONObject("if");
+        if (iff != null) {
+            String[] conditions = JSONObject.getNames(iff);
+            Map<String,Boolean> optionsMap = new HashMap<>();
+            for (String condition: conditions) {
+                optionsMap.put(condition, iff.optBoolean(condition,true));
+            }
+            newModel.setOptions(optionsMap);
+        }
         return newModel;
     }
 

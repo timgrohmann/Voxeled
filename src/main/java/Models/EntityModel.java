@@ -3,11 +3,16 @@ package Models;
 import GL_Math.Vector3;
 import org.lwjgl.system.CallbackI;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class EntityModel extends Model {
     private CuboidModel[] cuboidModels;
 
     public boolean transparent;
     public HitBoxModel hitBoxModel;
+
+    private Map<String, Boolean> options = new HashMap<>();
 
 
     public EntityModel(CuboidModel[] cuboidModels, boolean transparent) {
@@ -43,18 +48,28 @@ public class EntityModel extends Model {
     }
 
     public int getVertexCount(Culling culling) {
+        return getVertexCount(culling, new HashMap<>());
+    }
+
+    public int getVertexCount(Culling culling, Map<String, Boolean> options) {
         int sum = 0;
         for (CuboidModel m: cuboidModels) {
+            if (!m.shouldBeRendered(options)) continue;
             sum += m.getVertexCount(culling);
         }
         return sum;
     }
 
     public ModelVertex[] getModelVertices(Culling culling) {
-        ModelVertex[] modelVertices = new ModelVertex[getVertexCount(culling)];
+        return getModelVertices(culling, new HashMap<>());
+    }
+
+    public ModelVertex[] getModelVertices(Culling culling, Map<String, Boolean> options) {
+        ModelVertex[] modelVertices = new ModelVertex[getVertexCount(culling,options)];
 
         int s = 0;
         for (CuboidModel m: cuboidModels) {
+            if (!m.shouldBeRendered(options)) continue;
             ModelVertex[] cuboidVertices = m.getModelVertices(culling);
             System.arraycopy(cuboidVertices,0,modelVertices,s,cuboidVertices.length);
             s += cuboidVertices.length;

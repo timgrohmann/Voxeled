@@ -28,7 +28,7 @@ public class Chunk {
 
     boolean willUnload = false;
     private boolean shouldReload = false;
-    public boolean shouldUpdate;
+    public boolean shouldUpdate = true;
     private boolean addedStructures = false;
 
     private BlockABO arrayBuffer;
@@ -193,13 +193,13 @@ public class Chunk {
     }
 
     void tick() {
-        reload(false);
         if (!shouldUpdate) return;
         for (Block b: blocks) {
             if (b != null && b.shouldUpdate) {
                 b.tick();
             }
         }
+        reload(false);
         shouldUpdate = false;
     }
 

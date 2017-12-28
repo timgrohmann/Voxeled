@@ -11,6 +11,6 @@ public class TestBlock extends Block {
 
     @Override
     public void registerTextures() {
-        loadModel("block/test");
+        loadModel("block/stone");
     }
 }
