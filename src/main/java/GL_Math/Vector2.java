@@ -4,6 +4,11 @@ public class Vector2 {
     public float x;
     public float y;
 
+    public Vector2(double x, double y) {
+        this.x = (float) x;
+        this.y = (float) y;
+    }
+
     public Vector2(float x, float y) {
         this.x = x;
         this.y = y;
@@ -42,13 +47,13 @@ public class Vector2 {
         return copy.multiply(scalar);
     }
 
-    public Vector2 add(Vector3 adder) {
+    public Vector2 add(Vector2 adder) {
         this.x += adder.x;
         this.y += adder.y;
         return this;
     }
 
-    public Vector2 added(Vector3 adder) {
+    public Vector2 added(Vector2 adder) {
         Vector2 copy = copy();
         return copy.add(adder);
     }

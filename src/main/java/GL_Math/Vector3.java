@@ -11,6 +11,12 @@ public class Vector3 {
         this.z = z;
     }
 
+    public Vector3(double x, double y, double z) {
+        this.x = (float) x;
+        this.y = (float) y;
+        this.z = (float) z;
+    }
+
     public Vector3() {
         this.x = 0;
         this.y = 0;
@@ -67,6 +73,10 @@ public class Vector3 {
     public Vector3 added(Vector3 adder) {
         Vector3 copy = copy();
         return copy.add(adder);
+    }
+    public Vector3 added(float x, float y, float z) {
+        Vector3 copy = copy();
+        return copy.add(new Vector3(x,y,z));
     }
 
     public Vector3 copy() {

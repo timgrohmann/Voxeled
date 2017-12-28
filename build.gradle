@@ -33,6 +33,7 @@ dependencies {
     compile "org.lwjgl:lwjgl-opengl:$lwjglVersion"
     compile "org.lwjgl:lwjgl-stb:$lwjglVersion"
     compile group: 'org.l33tlabs.twl', name: 'pngdecoder', version: '1.0'
+    compile group: 'org.json', name: 'json', version: '20090211'
     runtime "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
     runtime "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
     runtime "org.lwjgl:lwjgl-jemalloc:$lwjglVersion:$lwjglNatives"
