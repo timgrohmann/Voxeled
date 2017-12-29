@@ -116,4 +116,12 @@ public class GL_Window {
     public float getAspectRatio() {
         return (float) width / (float) height;
     }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
+    }
 }

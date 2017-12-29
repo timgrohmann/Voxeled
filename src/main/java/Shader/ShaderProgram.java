@@ -58,6 +58,7 @@ abstract public class ShaderProgram {
 
     public void use() {
         glUseProgram(this.program);
+
     }
 
     private int compileShader(String sourcePath, int type) throws Exception {

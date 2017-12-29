@@ -37,7 +37,7 @@ public class Renderer {
     private int matLocation;
 
     private final Matrix4 mat;
-    private Matrix4 perspectiveMatrix;
+    public Matrix4 perspectiveMatrix;
 
     private float a = 0;
 

@@ -2,6 +2,7 @@ package Blocks;
 
 import Entities.Block;
 import GL_Math.Vector3;
+import Models.CuboidFace;
 import World.Chunk;
 
 import java.util.HashMap;
@@ -10,9 +11,9 @@ import java.util.Map;
 public class Fence extends Block{
     public Fence(Vector3 pos, Chunk chunk) {
         super(pos, Type.FENCE, chunk);
-        this.options.put("north", true);
+        this.options.put("north", false);
         this.options.put("south", true);
-        this.options.put("west", true);
+        this.options.put("west", false);
         this.options.put("east", true);
         shouldUpdate = true;
     }

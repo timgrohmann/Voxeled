@@ -20,7 +20,6 @@ import Shader.WorldShaderProgram;
 import Textures.Texture;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,6 +38,10 @@ public class GUIDrawer {
 
     private ItemBar itemBar;
     private ItemBarSelector itemBarSelector;
+
+    private ItemBarBlock itemBarBlock;
+    private ItemBarFBO itemBarFBO;
+    private Matrix4 itemBarBlockProjection;
 
     public boolean menuShown = false;
 
@@ -76,8 +79,21 @@ public class GUIDrawer {
 
         itemBar = new ItemBar(new Vector2(0, -0.85f), 1.8f, true);
         itemBarSelector = new ItemBarSelector(new Vector2(-0.8f,-0.85f),0.2f,true);
+
+        itemBarBlock = new ItemBarBlock(new Vector2(-0.8f,-0.85f),0.2f,true);
+        itemBarFBO = new ItemBarFBO(renderer.getWindow());
+
+        itemBarBlockProjection = Matrix4.translationMatrix(new Vector3(-0.5f,-0.5f,-0.5f));
+        itemBarBlockProjection.apply(Matrix4.scaleMatrix(1,-1,1));
+        itemBarBlockProjection.apply(Matrix4.rotationMatrixY((float) Math.PI / 180 * 20));
+        //mat.apply(Matrix4.rotationMatrixY(a));
+        //a+=0.01;
+        itemBarBlockProjection.apply(Matrix4.rotationMatrixX((float) Math.PI / 8));
+        itemBarBlockProjection.apply(Matrix4.translationMatrix(new Vector3(0,0,-4f)));
+        itemBarBlockProjection.apply(Matrix4.projectionMatrix(0.3f,1,0.1f,10));
     }
 
+    private float a = 0;
     public void renderStaticGUI(Matrix4 matrix4) {
         if (menuShown) {
             GUIButton closeButton = new GUIButton(new Vector2(0,0), 1.6f,"Spiel beenden?");
@@ -97,7 +113,6 @@ public class GUIDrawer {
 
         renderComponent(chunkText);
         renderComponent(coordText);
-
 
         //Actual render pass
 
@@ -119,25 +134,43 @@ public class GUIDrawer {
         mainVertices.clear();
         textVertices.clear();
 
-        //Render blocks in inventory
-        inventoryBlockShaderProgram.use();
-        inventoryBlockShaderProgram.setUniformMatrix("mat", Matrix4.guiMatrix(1,renderer.getWindow().getAspectRatio()));
-        inventoryBlockShaderProgram.setUniformVector("light_dir", new Vector3(0,-5,-5));
 
-        Block[] inventory = renderer.player.inventory();
-        ArrayList<Vertex> displayBlockVertices = new ArrayList<>();
+
+        //Render blocks in inventory
+
+        inventoryBlockShaderProgram.use();
+        inventoryBlockShaderProgram.setUniformMatrix("mat", itemBarBlockProjection);
+        inventoryBlockShaderProgram.setUniformVector("light_dir", new Vector3(1,3,2));
+
+        guiTextured2DShaderProgram.use();
+        guiTextured2DShaderProgram.setUniformFloat("aspect", renderer.getWindow().getAspectRatio());
+        guiTextured2DShaderProgram.setUniformInt("texture_diffuse", 0);
+
+        Block[] inv = renderer.player.inventory();
         for (int i = 0; i < 9; i++) {
-            if (inventory[i] == null) continue;
-            displayBlockVertices.addAll(Arrays.asList(blockDisplayQuad(i,inventory[i])));
+            Block invBlock = inv[i];
+            if (invBlock == null) continue;
+            inventoryBlockShaderProgram.use();
+
+            inventroyBlockABO.load(invBlock.getVertices());
+            renderer.world.blockTextures.activateTextures();
+            itemBarFBO.bind();
+            Renderer.setDepthTest(true);
+            inventroyBlockABO.render();
+            itemBarFBO.unbind();
+
+
+            guiTextured2DShaderProgram.use();
+            itemBarBlock.setScrollState(i);
+            mainGuiBuffer.load(itemBarBlock.getVertices());
+            itemBarFBO.activateTexture();
+
+            Renderer.setDepthTest(false);
+            mainGuiBuffer.render();
         }
 
-        Vertex[] vertices1 = new Vertex[displayBlockVertices.size()];
-        vertices1 = displayBlockVertices.toArray(vertices1);
-        inventroyBlockABO.load(vertices1);
-        inventroyBlockABO.render();
-
-        Renderer.setDepthTest(true);
         Renderer.setFaceCulling(true);
+        Renderer.setDepthTest(true);
     }
 
     private void renderComponent(UIBasicTexturedComponent component) {

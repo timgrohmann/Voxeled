@@ -199,7 +199,7 @@ public class Chunk {
                 b.tick();
             }
         }
-        reload(false);
+        reload(true);
         shouldUpdate = false;
     }
 
