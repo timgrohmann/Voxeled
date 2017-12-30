@@ -57,23 +57,38 @@ public class BlockTextures {
     public void load() {
         if (textureId == -1) textureId = GL11.glGenTextures();
 
-        TextureLoader texture = TextureLoader.load(texPath);
-
-
 
         GL13.glActiveTexture(GL_TEXTURE0);
         GL11.glBindTexture(GL_TEXTURE_2D_ARRAY, textureId);
 
 
-        glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, TEXTURE_SIZE, TEXTURE_SIZE, textures.length);
-
-
+        int layerCount = 0;
+        TextureLoader[] textureLoaders = new TextureLoader[textures.length];
 
         for (int i = 0; i < textures.length; i++) {
             TextureLoader loader = TextureLoader.load("textures/PureBDcraft  16x MC112/assets/minecraft/textures/" + textures[i].name + ".png");
-            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, TEXTURE_SIZE, TEXTURE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, loader.buf);
 
-            textures[i].layer = i;
+            int texCount = loader.tHeight / TEXTURE_SIZE;
+            textureLoaders[i] = loader;
+            layerCount += texCount;
+        }
+
+        glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, TEXTURE_SIZE, TEXTURE_SIZE, layerCount);
+
+        int currentLayer = 0;
+
+        for (int i = 0; i < textures.length; i++) {
+            TextureLoader loader = textureLoaders[i];
+
+            int texCount = loader.tHeight / TEXTURE_SIZE;
+            System.out.format("name: %s count: %d%n", textures[i].name, texCount);
+
+            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, currentLayer, TEXTURE_SIZE, TEXTURE_SIZE, texCount, GL_RGBA, GL_UNSIGNED_BYTE, loader.buf);
+
+            textures[i].layer = currentLayer;
+            textures[i].layerCount = texCount;
+
+            currentLayer += texCount;
         }
 
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

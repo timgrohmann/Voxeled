@@ -1,6 +1,16 @@
 package GUI;
 
+import Buffers.BlockABO;
+import Buffers.Triangle2DABO;
+import Entities.Block;
+import GL_Math.Matrix4;
 import GL_Math.Vector2;
+import GL_Math.Vector3;
+import Main_Package.GL_Window;
+import Main_Package.Renderer;
+import Shader.GUITextured2DShaderProgram;
+import Shader.WorldShaderProgram;
+import Textures.BlockTextures;
 
 public class ItemBarBlock extends UIBasicTexturedComponent {
 
@@ -9,15 +19,66 @@ public class ItemBarBlock extends UIBasicTexturedComponent {
 
     private final Vector2 initialPos;
 
-    public ItemBarBlock(Vector2 pos, float width, boolean center) {
+    private final WorldShaderProgram blockShader;
+    private BlockABO inventoryBlockABO;
+    private final ItemBarFBO itemBarFBO;
+    private final Renderer r;
+    private final GUITextured2DShaderProgram guiShader;
+    private final Triangle2DABO guiABO;
+    private final Matrix4 itemBarBlockProjection;
+
+    public ItemBarBlock(Vector2 pos, float width, boolean center, GUIDrawer guiDrawer) {
         super(pos, width, center, UV_ORIGIN, UV_SIZE);
         initialPos = pos.copy();
+
+        this.r = guiDrawer.renderer;
+        this.blockShader = r.worldShader;
+        this.guiShader = guiDrawer.guiTextured2DShaderProgram;
+        this.guiABO = guiDrawer.mainGuiBuffer;
+        itemBarFBO = new ItemBarFBO(r.getWindow());
+
+
+        itemBarBlockProjection = Matrix4.translationMatrix(new Vector3(-0.5f,-0.5f,-0.5f));
+        itemBarBlockProjection.apply(Matrix4.scaleMatrix(1,-1,1));
+        itemBarBlockProjection.apply(Matrix4.rotationMatrixY((float) Math.PI / 180 * 20));
+        itemBarBlockProjection.apply(Matrix4.rotationMatrixX((float) Math.PI / 8));
+        itemBarBlockProjection.apply(Matrix4.translationMatrix(new Vector3(0,0,-4f)));
+        itemBarBlockProjection.apply(Matrix4.projectionMatrix(0.3f,1,0.1f,10));
     }
 
-    public void setScrollState(int slot /*0-8*/) {
+    void setScrollState(int slot /*0-8*/) {
         pos.x = initialPos.x + slot * size.x;
         generateVertices();
     }
 
+    public void render(Block b, int slot) {
+        blockShader.use();
+        inventoryBlockABO.load(b.getVertices());
+        r.activateBlockTextures();
+        itemBarFBO.bind();
+        Renderer.setDepthTest(true);
+        inventoryBlockABO.render();
+        itemBarFBO.unbind();
 
+
+        guiShader.use();
+        setScrollState(slot);
+        guiABO.load(this.getVertices());
+
+        itemBarFBO.activateTexture();
+        Renderer.setDepthTest(false);
+        guiABO.render();
+    }
+
+    public void setUp() {
+        if (inventoryBlockABO == null) inventoryBlockABO = this.r.world.entityABO;
+
+        blockShader.use();
+        blockShader.setUniformMatrix("mat", itemBarBlockProjection);
+        blockShader.setUniformVector("light_dir", new Vector3(1,3,2));
+
+        guiShader.use();
+        guiShader.setUniformFloat("aspect", r.getWindow().getAspectRatio());
+        guiShader.setUniformInt("texture_diffuse", 0);
+    }
 }

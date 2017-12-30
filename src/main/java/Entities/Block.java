@@ -106,6 +106,14 @@ abstract public class Block extends DrawableEntity implements Collidable {
         return true;
     }
 
+    /**
+     * Called by <i>Game_IO</i> class after placing this block.
+     * @param conPos The world position the click creating this block hit the others block hitbox.
+     */
+    public void updateOptionsWithPlacePos(Vector3 conPos) {
+
+    }
+
     public void destroy() { chunk.removeBlock(this);}
 
     public byte store() {

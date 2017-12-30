@@ -5,7 +5,6 @@ import GL_Math.Matrix4;
 import GL_Math.Vector3;
 import GUI.GUIDrawer;
 import Registry.BlockRegistry;
-import Shader.WaterShaderProgram;
 import Shader.WorldShaderProgram;
 import World.World;
 import org.lwjgl.opengl.GL;
@@ -39,7 +38,7 @@ public class Renderer {
     private final Matrix4 mat;
     public Matrix4 perspectiveMatrix;
 
-    private float a = 0;
+    private float anim = 0;
 
     private int chunkCoolDown = 0;
 
@@ -110,6 +109,7 @@ public class Renderer {
 
         Vector3 lightDirection = new Vector3(2,5,1);
         worldShader.setUniformVector("light_dir", lightDirection);
+        worldShader.setUniformInt("animationFrame", 1);
 
         matLocation = worldShader.uniformLocation("mat");
 
@@ -143,6 +143,9 @@ public class Renderer {
     }
 
     private void render() {
+        worldShader.use();
+        worldShader.setUniformInt("animationFrame",(int) anim);
+
         mat.reset();
 
         mat.apply(camera.cameraMatrix());
@@ -160,6 +163,9 @@ public class Renderer {
         guiDrawer.renderStaticGUI(mat);
 
         Log.logGLError();
+
+
+        anim += 0.1;
     }
 
     public GL_Window getWindow() {

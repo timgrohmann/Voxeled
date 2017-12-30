@@ -5,6 +5,8 @@ import GL_Math.Vector3;
 public class Texture{
     public int layer = -1;
 
+    public int layerCount = 1;
+
     public final String name;
     public final Vector3 blendColor;
 

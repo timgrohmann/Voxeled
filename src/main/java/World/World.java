@@ -142,7 +142,7 @@ public class World {
      * @param y y position
      * @param z z position
      */
-    public void setBlockForCoordinates(Block.Type type, int x, int y, int z) {
+    public Block setBlockForCoordinates(Block.Type type, int x, int y, int z) {
         int inChunkX = Math.floorMod(x, Chunk.chunkSize);
         int inChunkZ = Math.floorMod(z, Chunk.chunkSize);
 
@@ -157,24 +157,26 @@ public class World {
         }
 
         if (chunk == null) {
-            return;
+            return null;
         }
 
         Block block = type.createInstance(new Vector3(x,y,z), chunk);
-        if (block == null) return;
+        if (block == null) return null;
         chunk.setBlockAt(block, inChunkX, y, inChunkZ);
 
         //Update neighbours
         block.shouldUpdate = true;
         updateBlocksAround(x,y,z);
+
+        return block;
     }
 
-    public void setBlockForCoordinates(Block.Type type, Vector3 pos) {
+    public Block setBlockForCoordinates(Block.Type type, Vector3 pos) {
         int x = (int) Math.floor(pos.x);
         int y = (int) Math.floor(pos.y);
         int z = (int) Math.floor(pos.z);
 
-        setBlockForCoordinates(type,x,y,z);
+        return setBlockForCoordinates(type,x,y,z);
     }
 
     public void updateBlocksAround(Vector3 pos) {

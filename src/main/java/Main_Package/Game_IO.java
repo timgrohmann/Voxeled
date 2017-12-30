@@ -74,9 +74,10 @@ public class Game_IO {
         int yDif = 0;
         int zDif = 0;
 
+        Vector3 pos = null;
         for (float s = 0; s < 6; s += 0.1){
             for (float dist = 0; dist < 6; dist += 0.05) {
-                Vector3 pos = renderer.camera.rayAtStep(dist);
+                pos = renderer.camera.rayAtStep(dist);
                 selected = renderer.world.getBlockForCoordinates(pos);
                 if (selected == null) continue;
 
@@ -122,7 +123,8 @@ public class Game_IO {
             if (shouldPlace) {
                 Block t = renderer.player.inventory()[renderer.player.selectedSlot];
                 if (t != null){
-                    renderer.world.setBlockForCoordinates(t.type, selected.getXPos() + xDif, selected.getYPos() + yDif, selected.getZPos() + zDif);
+                    Block newBlock = renderer.world.setBlockForCoordinates(t.type, selected.getXPos() + xDif, selected.getYPos() + yDif, selected.getZPos() + zDif);
+                    newBlock.updateOptionsWithPlacePos(pos);
                 }
             }
         }

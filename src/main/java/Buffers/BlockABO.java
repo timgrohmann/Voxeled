@@ -6,9 +6,7 @@ import Models.Vertex;
 import Shader.ShaderProgram;
 import org.lwjgl.opengl.GL20;
 
-import static org.lwjgl.opengl.GL11.GL_FLOAT;
-import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
 public class BlockABO extends ArrayBufferObject {
@@ -16,7 +14,7 @@ public class BlockABO extends ArrayBufferObject {
         super(shaderProgram);
     }
 
-    private static int STRIDE = 12;
+    private static int STRIDE = 13;
 
     public void load(Vertex[] vertices) {
         bind();
@@ -40,6 +38,8 @@ public class BlockABO extends ArrayBufferObject {
             values[i * STRIDE + 9] = blendColor.x;
             values[i * STRIDE + 10] = blendColor.y;
             values[i * STRIDE + 11] = blendColor.z;
+
+            values[i * STRIDE + 12] = vertices[i].texture.layerCount;
         }
         //glBindBuffer(GL_ARRAY_BUFFER, id);
         glBufferData(GL_ARRAY_BUFFER,values,GL_DYNAMIC_DRAW);
@@ -62,6 +62,10 @@ public class BlockABO extends ArrayBufferObject {
         int in_BlendColor_Location = shaderProgram.attributeLocation("in_BlendColor");
         GL20.glEnableVertexAttribArray(in_BlendColor_Location);
         GL20.glVertexAttribPointer(in_BlendColor_Location,3,GL_FLOAT,false,STRIDE * Float.SIZE / 8,9 * Float.SIZE / 8);
+
+        int in_LayerCount_Location = shaderProgram.attributeLocation("in_LayerCount");
+        GL20.glEnableVertexAttribArray(in_LayerCount_Location);
+        GL20.glVertexAttribPointer(in_LayerCount_Location,1,GL_FLOAT,false,STRIDE * Float.SIZE / 8,12 * Float.SIZE / 8);
     }
 
     private Vector3[] getNormals(Vertex[] vertices) {

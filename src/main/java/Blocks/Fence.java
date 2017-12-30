@@ -41,6 +41,8 @@ public class Fence extends Block{
         return b != null && (b instanceof Fence || b.shouldCullFace(face.opposite()));
     }
 
+
+
     @Override
     public void registerTextures() {
         loadModel("blocks/fence");

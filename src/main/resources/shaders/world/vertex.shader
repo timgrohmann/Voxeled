@@ -6,8 +6,11 @@ layout(location = 1) in vec3 in_UVW;
 layout(location = 2) in vec3 in_Normal;
 layout(location = 3) in vec3 in_BlendColor;
 
+layout(location = 4) in float in_LayerCount;
+
 uniform mat4 mat;
 uniform vec3 light_dir;
+uniform int animationFrame;
 
 out vec3 UVW;
 out vec3 blendColor;
@@ -22,5 +25,6 @@ void main(void) {
 
     lightness = (clamp(dot(normalize(in_Normal), normalize(light_dir)), 0, 1) * (1-diff_light) + diff_light);
     UVW = in_UVW;
+    UVW.z += mod(animationFrame, in_LayerCount);
     blendColor = in_BlendColor;
 }

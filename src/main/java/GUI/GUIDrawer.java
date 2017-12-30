@@ -24,16 +24,16 @@ import java.util.Collection;
 import java.util.List;
 
 public class GUIDrawer {
-    private final Renderer renderer;
+    final Renderer renderer;
 
     private GUI2DShaderProgram gui2DShaderProgram;
     private GUISelectionShaderProgram selectionShaderProgram;
-    private GUITextured2DShaderProgram guiTextured2DShaderProgram;
+    GUITextured2DShaderProgram guiTextured2DShaderProgram;
     private WorldShaderProgram inventoryBlockShaderProgram;
 
     private GUILineABO arrayBuffer;
     private GUISelectionABO arrayBuffer3D;
-    private Triangle2DABO mainGuiBuffer;
+    Triangle2DABO mainGuiBuffer;
     private BlockABO inventroyBlockABO;
 
     private ItemBar itemBar;
@@ -80,17 +80,8 @@ public class GUIDrawer {
         itemBar = new ItemBar(new Vector2(0, -0.85f), 1.8f, true);
         itemBarSelector = new ItemBarSelector(new Vector2(-0.8f,-0.85f),0.2f,true);
 
-        itemBarBlock = new ItemBarBlock(new Vector2(-0.8f,-0.85f),0.2f,true);
+        itemBarBlock = new ItemBarBlock(new Vector2(-0.8f,-0.85f),0.2f,true, this);
         itemBarFBO = new ItemBarFBO(renderer.getWindow());
-
-        itemBarBlockProjection = Matrix4.translationMatrix(new Vector3(-0.5f,-0.5f,-0.5f));
-        itemBarBlockProjection.apply(Matrix4.scaleMatrix(1,-1,1));
-        itemBarBlockProjection.apply(Matrix4.rotationMatrixY((float) Math.PI / 180 * 20));
-        //mat.apply(Matrix4.rotationMatrixY(a));
-        //a+=0.01;
-        itemBarBlockProjection.apply(Matrix4.rotationMatrixX((float) Math.PI / 8));
-        itemBarBlockProjection.apply(Matrix4.translationMatrix(new Vector3(0,0,-4f)));
-        itemBarBlockProjection.apply(Matrix4.projectionMatrix(0.3f,1,0.1f,10));
     }
 
     private float a = 0;
@@ -138,35 +129,15 @@ public class GUIDrawer {
 
         //Render blocks in inventory
 
-        inventoryBlockShaderProgram.use();
-        inventoryBlockShaderProgram.setUniformMatrix("mat", itemBarBlockProjection);
-        inventoryBlockShaderProgram.setUniformVector("light_dir", new Vector3(1,3,2));
+        itemBarBlock.setUp();
 
-        guiTextured2DShaderProgram.use();
-        guiTextured2DShaderProgram.setUniformFloat("aspect", renderer.getWindow().getAspectRatio());
-        guiTextured2DShaderProgram.setUniformInt("texture_diffuse", 0);
+
 
         Block[] inv = renderer.player.inventory();
         for (int i = 0; i < 9; i++) {
             Block invBlock = inv[i];
             if (invBlock == null) continue;
-            inventoryBlockShaderProgram.use();
-
-            inventroyBlockABO.load(invBlock.getVertices());
-            renderer.world.blockTextures.activateTextures();
-            itemBarFBO.bind();
-            Renderer.setDepthTest(true);
-            inventroyBlockABO.render();
-            itemBarFBO.unbind();
-
-
-            guiTextured2DShaderProgram.use();
-            itemBarBlock.setScrollState(i);
-            mainGuiBuffer.load(itemBarBlock.getVertices());
-            itemBarFBO.activateTexture();
-
-            Renderer.setDepthTest(false);
-            mainGuiBuffer.render();
+            itemBarBlock.render(invBlock, i);
         }
 
         Renderer.setFaceCulling(true);

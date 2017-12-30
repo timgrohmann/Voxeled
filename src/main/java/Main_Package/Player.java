@@ -231,6 +231,10 @@ public class Player extends Entity implements Collidable{
         };
     }
 
+    public Block getSelectedBlock() {
+        return inventory()[selectedSlot];
+    }
+
     @Override
     public HitBox getHitbox() {
         return hitBox;

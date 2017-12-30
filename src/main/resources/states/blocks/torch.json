@@ -1,7 +1,10 @@
 {
   "parts": [
     {
+      "name": "block/torch_flame"
+    },
+    {
       "name": "block/normal_torch"
     }
-  ],
+  ]
 }

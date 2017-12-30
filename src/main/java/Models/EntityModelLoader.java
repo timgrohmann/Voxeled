@@ -11,6 +11,7 @@ import java.util.*;
 
 public class EntityModelLoader {
 
+    private Map<String, Texture> textureHashMap = new HashMap<>();
 
     public EntityModel loadState(String stateName) {
         try {
@@ -130,10 +131,19 @@ public class EntityModelLoader {
 
     private Texture textureForKey(String key, JSONObject lookup) {
         String textureName = textureLookUp(key, lookup);
+
+
+        if (textureHashMap.containsKey(textureName)) return textureHashMap.get(textureName);
+
+
         if (textureName.contains("&")) {
-            return new Texture(textureName.substring(0,textureName.length() - 1), true);
+            Texture newTexture = new Texture(textureName.substring(0,textureName.length() - 1), true);
+            textureHashMap.put(textureName, newTexture);
+            return newTexture;
         }else {
-            return new Texture(textureName);
+            Texture newTexture = new Texture(textureName);
+            textureHashMap.put(textureName,newTexture);
+            return newTexture;
         }
     }
 
