@@ -12,17 +12,53 @@ import java.util.*;
 public class EntityModelLoader {
 
 
-    public EntityModel loadModel(String modelName) {
+    public EntityModel loadState(String stateName) {
         try {
-            return loadFromEntityFile(modelName);
+            return loadFromStateFile(stateName);
         }catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private EntityModel loadFromEntityFile(String entityName) throws JSONException {
-        JSONObject jsonObject = fileToJSONObject(entityName);
+    private EntityModel loadFromStateFile(String stateFile) throws Exception{
+        JSONObject jsonObject = stateFileJSONObject(stateFile);
+
+        JSONArray parts = jsonObject.getJSONArray("parts");
+
+        List<CuboidModel> cuboidModelList = new ArrayList<>();
+
+        for (int i = 0; i < parts.length(); i++) {
+            JSONObject part = parts.getJSONObject(i);
+            String modelName = part.getString("name");
+            int rotation = part.optInt("rotation", 0);
+            List<CuboidModel> models = loadFromEntityFile(modelName, rotation, false);
+
+            JSONObject iff = part.optJSONObject("if");
+            if (iff != null) {
+                String[] conditions = JSONObject.getNames(iff);
+                ModelOptions optionsMap = new ModelOptions();
+                for (String condition: conditions) {
+                    optionsMap.put(condition, iff.optString(condition,""));
+                }
+                for (CuboidModel m: models) {
+                    m.setOptions(optionsMap);
+                }
+            }
+
+            cuboidModelList.addAll(models);
+        }
+
+        boolean transparent = jsonObject.optBoolean("transparent",false);
+
+        CuboidModel[] modelArr = new CuboidModel[cuboidModelList.size()];
+        modelArr = cuboidModelList.toArray(modelArr);
+
+        return new EntityModel(modelArr, transparent);
+    }
+
+    private List<CuboidModel> loadFromEntityFile(String entityName, int rotation, boolean uvLock) throws Exception {
+        JSONObject jsonObject = modelFileJSONObject(entityName);
         jsonObject = loadDependecies(jsonObject);
 
         JSONArray elements = jsonObject.getJSONArray("elements");
@@ -31,17 +67,16 @@ public class EntityModelLoader {
 
         JSONObject textures = jsonObject.getJSONObject("textures");
 
-        boolean transparent = jsonObject.optBoolean("transparent",false);
+
 
         for (int i = 0; i < elements.length(); i++) {
             JSONObject element = elements.getJSONObject(i);
             CuboidModel cuboidModel = getModelFromJSONObject(element, textures);
+            cuboidModel.rotateY(rotation, uvLock);
             cuboidModels.add(cuboidModel);
         }
 
-        CuboidModel[] cuboidModelArray = new CuboidModel[cuboidModels.size()];
-        cuboidModelArray = cuboidModels.toArray(cuboidModelArray);
-        return new EntityModel(cuboidModelArray, transparent);
+        return cuboidModels;
     }
 
     private CuboidModel getModelFromJSONObject(JSONObject element, JSONObject textures) throws JSONException {
@@ -86,15 +121,10 @@ public class EntityModelLoader {
 
         newModel.faces = faceMap;
 
-        JSONObject iff = element.optJSONObject("if");
-        if (iff != null) {
-            String[] conditions = JSONObject.getNames(iff);
-            Map<String,Boolean> optionsMap = new HashMap<>();
-            for (String condition: conditions) {
-                optionsMap.put(condition, iff.optBoolean(condition,true));
-            }
-            newModel.setOptions(optionsMap);
-        }
+
+
+        //newModel.rotateY(1,true);
+
         return newModel;
     }
 
@@ -117,10 +147,10 @@ public class EntityModelLoader {
         }
     }
 
-    private JSONObject loadDependecies(JSONObject object) {
+    private JSONObject loadDependecies(JSONObject object) throws Exception {
         String parentFile = object.optString("parent");
         if (parentFile != null && !Objects.equals(parentFile, "")) {
-            JSONObject parentObject = fileToJSONObject(parentFile);
+            JSONObject parentObject = modelFileJSONObject(parentFile);
             object.remove("parent");
             return loadDependecies(merge(parentObject,object));
         } else {
@@ -152,8 +182,16 @@ public class EntityModelLoader {
 
     }
 
-    private JSONObject fileToJSONObject(String fileName){
-        InputStream is = this.getClass().getResourceAsStream("/models/" + fileName + ".model");
+    private JSONObject stateFileJSONObject(String stateFileName) throws Exception {
+        return fileToJSONObject("/states/" + stateFileName + ".json");
+    }
+
+    private JSONObject modelFileJSONObject(String modelFileName) throws Exception {
+        return fileToJSONObject("/models/" + modelFileName + ".model");
+    }
+
+    private JSONObject fileToJSONObject(String fileName) throws Exception{
+        InputStream is = this.getClass().getResourceAsStream(fileName);
         if (is == null) System.err.format("%s not found!", fileName);
         String input = convertStreamToString(is);
         try {
@@ -161,7 +199,7 @@ public class EntityModelLoader {
         } catch (JSONException e) {
             System.err.format("%s is not a valid file or not in correct format.", fileName);
             e.printStackTrace();
-            return null;
+            throw e;
         }
     }
 

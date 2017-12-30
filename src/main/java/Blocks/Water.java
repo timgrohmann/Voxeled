@@ -12,7 +12,7 @@ public class Water extends Block {
 
     @Override
     public void registerTextures() {
-        loadModel("block/water");
+        loadModel("blocks/water");
     }
 
     @Override

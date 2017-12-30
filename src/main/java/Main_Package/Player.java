@@ -31,6 +31,8 @@ public class Player extends Entity implements Collidable{
     private static final float GROUND_FRICTION = 0.6f;
     private static final float EYE_HEIGHT = 1.6f;
 
+    public int selectedSlot = 0;
+
     private float walkBumpState = 0;
 
     private float lastX;
@@ -221,7 +223,7 @@ public class Player extends Entity implements Collidable{
                 renderer.registry.getBlockSingletonForType(Block.Type.DIRT),
                 renderer.registry.getBlockSingletonForType(Block.Type.WOOD),
                 renderer.registry.getBlockSingletonForType(Block.Type.PLANKS),
-                renderer.registry.getBlockSingletonForType(Block.Type.LEAF),
+                renderer.registry.getBlockSingletonForType(Block.Type.LEAVES),
                 renderer.registry.getBlockSingletonForType(Block.Type.SAND),
                 renderer.registry.getBlockSingletonForType(Block.Type.GRASS),
                 renderer.registry.getBlockSingletonForType(Block.Type.TORCH),

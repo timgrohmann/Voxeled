@@ -11,6 +11,6 @@ public class Planks extends Block{
 
     @Override
     public void registerTextures() {
-        loadModel("block/planks");
+        loadModel("blocks/planks");
     }
 }

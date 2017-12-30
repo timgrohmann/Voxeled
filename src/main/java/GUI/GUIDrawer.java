@@ -101,7 +101,7 @@ public class GUIDrawer {
         } else {
             renderCrosshair(matrix4);
             renderComponent(itemBar);
-            itemBarSelector.setScrollState(renderer.gameIO.selectedSlot);
+            itemBarSelector.setScrollState(renderer.player.selectedSlot);
             renderComponent(itemBarSelector);
         }
 
@@ -212,7 +212,7 @@ public class GUIDrawer {
     public void render3D(Matrix4 mat) {
         if (highlightedBlock == null) return;
 
-        Vertex[] vertices = highlightedBlock.getEdgeVertices();
+        Vector3[] vertices = highlightedBlock.getEdgeVertices();
         if (vertices == null || vertices.length == 0) return;
         selectionShaderProgram.use();
 
@@ -221,49 +221,5 @@ public class GUIDrawer {
         arrayBuffer3D.load(vertices);
         selectionShaderProgram.setUniformMatrix("matGUI", mat);
         arrayBuffer3D.render();
-    }
-
-    private static Vertex[] blockDisplayQuad(int slot, Block block) {
-        Texture topTexture = null;
-        Texture sideTexture = null;
-
-        Collection<CuboidFace> textures = block.model.getCuboidModels()[0].getFaces();
-
-        for (CuboidFace face: textures) {
-            if (face.face == CuboidFace.Face.TOP) topTexture = face.texture;
-            if (face.face == CuboidFace.Face.LEFT) sideTexture = face.texture;
-        }
-
-        if (sideTexture == null || topTexture == null) return new Vertex[0];
-
-        float h = 0.10f;
-        float xMid = -0.8f + 0.2f * slot;
-        float yMid = -0.85f;
-        float inCircleRad = 0.866f * h / 2;
-
-        //top side
-        Vertex top = new Vertex(new Vector3(xMid,yMid + h / 2,0), 0, 0, topTexture);
-        Vertex right = new Vertex(new Vector3(xMid + inCircleRad,yMid + h / 4,0), 0, 1, topTexture);
-        Vertex bottom = new Vertex(new Vector3(xMid,yMid,0), 1, 1, topTexture);
-        Vertex left = new Vertex(new Vector3(xMid - inCircleRad,yMid + h / 4,0), 1, 0, topTexture);
-
-
-        //right side
-        Vertex rightTop = new Vertex(new Vector3(xMid + inCircleRad,yMid + h / 4,0), 0, 0, sideTexture);
-        Vertex rightBottom = new Vertex(new Vector3(xMid + inCircleRad,yMid - h / 4,0), 0, 1, sideTexture);
-        Vertex rightMidBottom = new Vertex(new Vector3(xMid,yMid - h / 2,0), 1, 1, sideTexture);
-        Vertex rightCenter = new Vertex(new Vector3(xMid,yMid,0), 1, 0, sideTexture);
-
-        //left side
-        Vertex leftTop = new Vertex(new Vector3(xMid - inCircleRad,yMid + h / 4,0), 1, 0, sideTexture);
-        Vertex leftBottom = new Vertex(new Vector3(xMid - inCircleRad,yMid - h / 4,0), 1, 1, sideTexture);
-        Vertex leftMidBottom = new Vertex(new Vector3(xMid,yMid - h / 2,0), 0, 1, sideTexture);
-        Vertex leftCenter = new Vertex(new Vector3(xMid,yMid,0), 0, 0, sideTexture);
-
-        return new Vertex[]{
-                top,right,bottom,bottom,left,top,
-                rightTop,rightBottom,rightMidBottom,rightMidBottom,rightCenter,rightTop,
-                leftTop,leftBottom,leftMidBottom,leftMidBottom,leftCenter,leftTop
-        };
     }
 }

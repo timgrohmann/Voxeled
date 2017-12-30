@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_half_top_all",
+  "textures": {
+    "all": "blocks/planks_oak"
+  }
+}

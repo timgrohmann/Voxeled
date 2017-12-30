@@ -2,6 +2,7 @@ package Entities;
 
 import Blocks.*;
 import GL_Math.Vector3;
+import Main_Package.Player;
 import Models.*;
 import Registry.BlockRegistry;
 import World.Chunk;
@@ -13,7 +14,7 @@ import java.util.Map;
 abstract public class Block extends DrawableEntity implements Collidable {
 
     private Culling culling = new Culling(true);
-    public Map<String, Boolean> options = new HashMap<>();
+    public ModelOptions options = new ModelOptions();
 
     public boolean shouldUpdate = false;
 
@@ -53,7 +54,7 @@ abstract public class Block extends DrawableEntity implements Collidable {
     public abstract void registerTextures();
 
     protected void loadModel(String modelName) {
-        loadModel(new EntityModelLoader().loadModel(modelName));
+        loadModel(new EntityModelLoader().loadState(modelName));
     }
 
     protected void loadModel(EntityModel model) {
@@ -80,8 +81,10 @@ abstract public class Block extends DrawableEntity implements Collidable {
     }
 
 
-    public Vertex[] getEdgeVertices() {
-        return new Vertex[0];
+    public Vector3[] getEdgeVertices() {
+        HitBox hitBox = this.getHitbox();
+        if (hitBox == null) return new Vector3[0];
+        return hitBox.getEdgeVertices();
     }
 
     public void tick() {
@@ -93,6 +96,14 @@ abstract public class Block extends DrawableEntity implements Collidable {
      */
     public void primaryInteraction() {
         destroy();
+    }
+
+    /**
+     * Handles right-click
+     * @return True if a block should be placed normally.
+     */
+    public boolean secondaryInteraction(Player p) {
+        return true;
     }
 
     public void destroy() { chunk.removeBlock(this);}
@@ -107,7 +118,7 @@ abstract public class Block extends DrawableEntity implements Collidable {
         PLANKS(3, Planks.class),
         DIRT (4, Dirt.class),
         WOOD (5, Log.class),
-        LEAF (6, Leaf.class),
+        LEAVES(6, Leaves.class),
         SAND (7, Sand.class),
         __TREE_SPAWNER (8, TreeSpawner.class),
         WATER (9, Water.class),
@@ -145,6 +156,16 @@ abstract public class Block extends DrawableEntity implements Collidable {
         }
     }
 
+    public boolean shouldCullFace(CuboidFace.Face face) {
+        for (CuboidModel cubModel: model.getCuboidModels()) {
+            if (!cubModel.shouldBeRendered(this.options)) continue;
+            Map<CuboidFace.Face, CuboidFace> faceMap = cubModel.getFacesMap();
+            if (!faceMap.containsKey(face)) continue;
+            if (faceMap.get(face).culling) return true;
+        }
+        return false;
+    }
+
     public void setVisibleTop(boolean visibleTop) {
         this.culling.top = visibleTop;
     }
@@ -164,7 +185,7 @@ abstract public class Block extends DrawableEntity implements Collidable {
         this.culling.front = visibleFront;
     }
 
-    public void setOptions(Map<String, Boolean> options) {
+    public void setOptions(ModelOptions options) {
         this.options = options;
     }
 
@@ -198,8 +219,8 @@ abstract public class Block extends DrawableEntity implements Collidable {
 
     @Override
     public HitBox getHitbox() {
-
+        if (model == null) return null;
         //return new HitBox(new Vector3(0f,0f,0f), new Vector3(1f,0.5f,1f), this);
-        return model.hitBoxModel.linkedWith(this);
+        return model.getHitBoxModel(options).linkedWith(this);
     }
 }

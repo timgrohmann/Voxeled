@@ -8,11 +8,12 @@ import World.Chunk;
 public class PlanksSlab extends Block {
     public PlanksSlab(Vector3 pos, Chunk chunk) {
         super(pos, Type.PLANKS_SLAB, chunk);
+        this.options.put("half", "bottom");
     }
 
     @Override
     public void registerTextures() {
-        loadModel("block/planks_slab");
+        loadModel("blocks/planks_slab");
     }
 
     @Override

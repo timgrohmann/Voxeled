@@ -11,6 +11,6 @@ public class Log extends Block {
 
     @Override
     public void registerTextures() {
-        loadModel("block/log");
+        loadModel("blocks/log");
     }
 }

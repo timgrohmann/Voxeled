@@ -170,9 +170,9 @@ public class Chunk {
     }
 
     private boolean cullingForBlock(Block b, CuboidFace.Face face) {
-        Map<CuboidFace.Face, CuboidFace> faceMap = b.model.getCuboidModels()[0].getFacesMap();
-        if (!faceMap.containsKey(face)) return false;
-        return faceMap.get(face).culling;
+        //Map<CuboidFace.Face, CuboidFace> faceMap = b.model.getCuboidModels()[0].getFacesMap();
+        //if (!faceMap.containsKey(face)) return false;
+        return b.shouldCullFace(face);
     }
 
 

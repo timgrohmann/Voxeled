@@ -4,9 +4,7 @@ import GL_Math.Vector2;
 import GL_Math.Vector3;
 import Textures.Texture;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class CuboidFace extends Model {
     Vector2 uvOrigin;
@@ -15,7 +13,7 @@ public class CuboidFace extends Model {
     public Texture texture;
     public boolean culling = true;
 
-    private final int rotation;
+    private int rotation;
 
     CuboidModel cuboidModel;
 
@@ -28,48 +26,14 @@ public class CuboidFace extends Model {
         this.cuboidModel = model;
         this.rotation = rotation;
 
-        Vector3[] corners = null;
+        generateVertices();
+    }
+
+    private void generateVertices() {
+        Vector3[] corners = getCorners();
 
         List<ModelVertex> vertexList = new ArrayList<>();
 
-        switch (face) {
-            case TOP:
-                corners = new Vector3[]{cuboidModel.origin.added(0,cuboidModel.size.y,0),
-                        cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,0),
-                        cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,cuboidModel.size.z),
-                        cuboidModel.origin.added(0,cuboidModel.size.y,cuboidModel.size.z)};
-                break;
-            case BOTTOM:
-                corners = new Vector3[]{cuboidModel.origin.added(0,0,0),
-                        cuboidModel.origin.added(0,0,cuboidModel.size.z),
-                        cuboidModel.origin.added(cuboidModel.size.x,0,cuboidModel.size.z),
-                        cuboidModel.origin.added(cuboidModel.size.x,0,0)};
-                break;
-            case LEFT:
-                corners = new Vector3[]{cuboidModel.origin.added(0,cuboidModel.size.y,0),
-                        cuboidModel.origin.added(0,cuboidModel.size.y,cuboidModel.size.z),
-                        cuboidModel.origin.added(0,0,cuboidModel.size.z),
-                        cuboidModel.origin.added(0,0,0),};
-                break;
-            case RIGHT:
-                corners = new Vector3[]{cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,cuboidModel.size.z),
-                        cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,0),
-                        cuboidModel.origin.added(cuboidModel.size.x,0,0),
-                        cuboidModel.origin.added(cuboidModel.size.x,0,cuboidModel.size.z)};
-                break;
-            case FRONT:
-                corners = new Vector3[]{cuboidModel.origin.added(0,cuboidModel.size.y,cuboidModel.size.z),
-                        cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,cuboidModel.size.z),
-                        cuboidModel.origin.added(cuboidModel.size.x,0,cuboidModel.size.z),
-                        cuboidModel.origin.added(0,0,cuboidModel.size.z)};
-                break;
-            case BACK:
-                corners = new Vector3[]{cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,0),
-                        cuboidModel.origin.added(0,cuboidModel.size.y,0),
-                        cuboidModel.origin.added(0,0,0),
-                        cuboidModel.origin.added(cuboidModel.size.x,0,0)};
-                break;
-        }
 
         shiftByRotation(corners);
         vertexList.addAll(quadFromCorners(texturedVertices(corners)));
@@ -79,20 +43,56 @@ public class CuboidFace extends Model {
         vertices = vertexList.toArray(vertices);
     }
 
+    private Vector3[] getCorners() {
+        switch (this.face) {
+            case TOP:
+                return new Vector3[]{cuboidModel.origin.added(0,cuboidModel.size.y,0),
+                        cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,0),
+                        cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,cuboidModel.size.z),
+                        cuboidModel.origin.added(0,cuboidModel.size.y,cuboidModel.size.z)};
+            case BOTTOM:
+                return new Vector3[]{cuboidModel.origin.added(0,0,0),
+                        cuboidModel.origin.added(0,0,cuboidModel.size.z),
+                        cuboidModel.origin.added(cuboidModel.size.x,0,cuboidModel.size.z),
+                        cuboidModel.origin.added(cuboidModel.size.x,0,0)};
+            case LEFT:
+                return new Vector3[]{cuboidModel.origin.added(0,cuboidModel.size.y,0),
+                        cuboidModel.origin.added(0,cuboidModel.size.y,cuboidModel.size.z),
+                        cuboidModel.origin.added(0,0,cuboidModel.size.z),
+                        cuboidModel.origin.added(0,0,0),};
+            case RIGHT:
+                return new Vector3[]{cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,cuboidModel.size.z),
+                        cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,0),
+                        cuboidModel.origin.added(cuboidModel.size.x,0,0),
+                        cuboidModel.origin.added(cuboidModel.size.x,0,cuboidModel.size.z)};
+            case FRONT:
+                return new Vector3[]{cuboidModel.origin.added(0,cuboidModel.size.y,cuboidModel.size.z),
+                        cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,cuboidModel.size.z),
+                        cuboidModel.origin.added(cuboidModel.size.x,0,cuboidModel.size.z),
+                        cuboidModel.origin.added(0,0,cuboidModel.size.z)};
+            case BACK:
+                return new Vector3[]{cuboidModel.origin.added(cuboidModel.size.x,cuboidModel.size.y,0),
+                        cuboidModel.origin.added(0,cuboidModel.size.y,0),
+                        cuboidModel.origin.added(0,0,0),
+                        cuboidModel.origin.added(cuboidModel.size.x,0,0)};
+        }
+        return null;
+    }
+
     private void shiftByRotation(Vector3[] in) {
-        if (rotation == 1) {
+        if (Math.floorMod(rotation, 4) == 1) {
             Vector3 temp = in[3];
             in[3] = in[2];
             in[2] = in[1];
             in[1] = in[0];
             in[0] = temp;
-        } else if (rotation == -1) {
+        } else if (Math.floorMod(rotation, 4) == 3) {
             Vector3 temp = in[0];
             in[0] = in[1];
             in[1] = in[2];
             in[2] = in[3];
             in[3] = temp;
-        } else if (rotation == 2 || rotation == -2) {
+        } else if (Math.floorMod(rotation, 4) == 2) {
             Vector3 temp1 = in[0];
             Vector3 temp2 = in[1];
             in[0] = in[2];
@@ -114,7 +114,7 @@ public class CuboidFace extends Model {
     private List<ModelVertex> quadFromCorners(List<ModelVertex> ms) {
         return Arrays.asList(
                 ms.get(0),ms.get(3),ms.get(2),
-                ms.get(2),ms.get(1),ms.get(0)
+                ms.get(2).copy(),ms.get(1),ms.get(0).copy()
         );
     }
 
@@ -122,14 +122,7 @@ public class CuboidFace extends Model {
         return texture;
     }
 
-    public enum Face{
-        TOP("up"), BOTTOM("down"), LEFT("west"), RIGHT("east"), FRONT("north"), BACK("south");
-        String rawValue;
 
-        Face(String rawValue) {
-            this.rawValue = rawValue;
-        }
-    }
 
     @Override
     int getVertexCount(Culling culling) {
@@ -152,6 +145,70 @@ public class CuboidFace extends Model {
                 (face == Face.LEFT && culling.left) ||
                 (face == Face.RIGHT && culling.right) ||
                 (face == Face.FRONT && culling.front) ||
-                (face == Face.BACK && culling.back);
+                (face == Face.BACK && culling.back) ||
+                !this.culling;
+    }
+
+    void rotateY(int by, boolean lockUV) {
+        // Front -> Right -> Back -> Left
+
+        if (by == 0) return;
+
+        if (face == Face.TOP && lockUV) {
+            rotation += by;
+            generateVertices();
+        }
+
+        for (ModelVertex vertex: vertices) {
+            vertex.rotate(by, lockUV);
+        }
+
+        if (by == 1) { // RIGHT TURN
+            face = face.right().right().right();
+        }
+
+        if (by == 2) { // HALF TURN
+            face = face.right().right();
+        }
+
+        if (by == -1) { // LEFT TURN
+            face = face.right();
+        }
+
+
+    }
+
+    public enum Face{
+        TOP("up"), BOTTOM("down"), LEFT("west"), RIGHT("east"), FRONT("north"), BACK("south");
+        String rawValue;
+        static Map<Face, Face> rightTurn = new HashMap<>();
+        static {
+            rightTurn.put(FRONT, RIGHT);
+            rightTurn.put(RIGHT, BACK);
+            rightTurn.put(BACK, LEFT);
+            rightTurn.put(LEFT, FRONT);
+            rightTurn.put(TOP, TOP);
+            rightTurn.put(BOTTOM, BOTTOM);
+        }
+
+        Face(String rawValue) {
+            this.rawValue = rawValue;
+        }
+
+        Face right() {
+            return rightTurn.get(this);
+        }
+
+        public Face opposite() {
+            switch (this) {
+                case TOP: return BOTTOM;
+                case BOTTOM: return TOP;
+                case LEFT: return RIGHT;
+                case RIGHT: return LEFT;
+                case FRONT: return FRONT;
+                case BACK: return BACK;
+            }
+            throw new RuntimeException("[Invalid state] Invalid Face!");
+        }
     }
 }

@@ -1,6 +1,8 @@
 package Main_Package;
 
+import Blocks.Planks;
 import Entities.Block;
+import Entities.HitBox;
 import GL_Math.Vector3;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 
@@ -14,7 +16,6 @@ public class Game_IO {
     private final Renderer renderer;
 
 
-    public int selectedSlot = 0;
     private double scrollState = 0;
 
     private boolean mouseLeftJustPressed = false;
@@ -40,23 +41,23 @@ public class Game_IO {
             scrollState += yOff;
             double scrollDiff = 0;
             if (scrollState > scrollDiff) {
-                selectedSlot--;
+                renderer.player.selectedSlot--;
                 scrollState = 0;
             }
             if (scrollState < -scrollDiff){
-                selectedSlot++;
+                renderer.player.selectedSlot++;
                 scrollState = 0;
             }
 
-            if (selectedSlot > 8) selectedSlot = 0;
-            if (selectedSlot < 0) selectedSlot = 8;
+            if (renderer.player.selectedSlot > 8) renderer.player.selectedSlot = 0;
+            if (renderer.player.selectedSlot < 0) renderer.player.selectedSlot = 8;
         });
 
         renderer.getWindow().addKeyCallback(keyInput);
     }
 
     void update() {
-        if (!menuShown) handleBlockInteraction();
+        if (!menuShown) handleBlockInteraction(renderer.player);
 
         mouseLeftJustPressed = false;
         mouseRightJustPressed = false;
@@ -66,7 +67,7 @@ public class Game_IO {
         if (key == GLFW_KEY_M && action == GLFW_PRESS) toggleMenu();
     };
 
-    private void handleBlockInteraction() {
+    private void handleBlockInteraction(Player p) {
         Block selected = null;
 
         int xDif = 0;
@@ -77,15 +78,19 @@ public class Game_IO {
             for (float dist = 0; dist < 6; dist += 0.05) {
                 Vector3 pos = renderer.camera.rayAtStep(dist);
                 selected = renderer.world.getBlockForCoordinates(pos);
-                if (selected != null) {
-                    float back = pos.x - selected.getXPos();
-                    float front = 1 - back;
+                if (selected == null) continue;
 
-                    float bottom = pos.y - selected.getYPos();
-                    float top = 1 - bottom;
+                HitBox h = selected.getHitbox();
 
-                    float right = pos.z - selected.getZPos();
-                    float left = 1 - right;
+                if (h != null && h.doesContainPoint(pos)) {
+                    float back = pos.x - h.min().x;
+                    float front = h.max().x - pos.x;
+
+                    float bottom = pos.y - h.min().y;
+                    float top = h.max().y - pos.y;
+
+                    float right = pos.z - h.min().z;
+                    float left = h.max().z - pos.z;
 
                     if (front < back && front < top && front < bottom && front < left && front < right) {
                         xDif = +1;
@@ -112,9 +117,13 @@ public class Game_IO {
         }
 
         if (selected != null && mouseRightJustPressed) {
-            Block t = renderer.player.inventory()[selectedSlot];
-            if (t != null){
-                renderer.world.setBlockForCoordinates(t.type, selected.getXPos() + xDif, selected.getYPos() + yDif, selected.getZPos() + zDif);
+            boolean shouldPlace = selected.secondaryInteraction(p);
+
+            if (shouldPlace) {
+                Block t = renderer.player.inventory()[renderer.player.selectedSlot];
+                if (t != null){
+                    renderer.world.setBlockForCoordinates(t.type, selected.getXPos() + xDif, selected.getYPos() + yDif, selected.getZPos() + zDif);
+                }
             }
         }
     }

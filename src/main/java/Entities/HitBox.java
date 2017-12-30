@@ -1,6 +1,7 @@
 package Entities;
 
 import GL_Math.Vector3;
+import Models.Vertex;
 
 public class HitBox {
     Vector3 minCorner;
@@ -72,12 +73,40 @@ public class HitBox {
         }
     }
 
-    private Vector3 min() {
-        return linkedEntity.pos.added(minCorner);
+    public Vector3 min() { return linkedEntity.pos.added(minCorner);
     }
-    private Vector3 max() {
+    public Vector3 max() {
         return linkedEntity.pos.added(maxCorner);
     }
 
 
+    public Vector3[] getEdgeVertices() {
+        Vector3 min = min();
+        Vector3 max = max();
+
+        return new Vector3[] {
+                new Vector3(min.x,min.y,min.z), new Vector3(min.x,max.y,min.z),
+                new Vector3(max.x,min.y,min.z), new Vector3(max.x,max.y,min.z),
+                new Vector3(max.x,min.y,max.z), new Vector3(max.x,max.y,max.z),
+                new Vector3(min.x,min.y,max.z), new Vector3(min.x,max.y,max.z),
+
+                new Vector3(min.x,min.y,min.z), new Vector3(max.x,min.y,min.z),
+                new Vector3(min.x,min.y,max.z), new Vector3(max.x,min.y,max.z),
+                new Vector3(min.x,max.y,min.z), new Vector3(max.x,max.y,min.z),
+                new Vector3(min.x,max.y,max.z), new Vector3(max.x,max.y,max.z),
+
+                new Vector3(min.x,min.y,min.z), new Vector3(min.x,min.y,max.z),
+                new Vector3(min.x,max.y,min.z), new Vector3(min.x,max.y,max.z),
+                new Vector3(max.x,min.y,min.z), new Vector3(max.x,min.y,max.z),
+                new Vector3(max.x,max.y,min.z), new Vector3(max.x,max.y,max.z),
+        };
+    }
+
+    public boolean doesContainPoint(Vector3 pos) {
+        Vector3 min = min();
+        Vector3 max = max();
+
+        return pos.x > min.x && pos.y > min.y && pos.z > min.z &&
+                pos.x < max.x && pos.y < max.y && pos.z < max.z;
+    }
 }

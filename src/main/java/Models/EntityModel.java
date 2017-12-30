@@ -3,41 +3,39 @@ package Models;
 import GL_Math.Vector3;
 import org.lwjgl.system.CallbackI;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class EntityModel extends Model {
     private CuboidModel[] cuboidModels;
 
     public boolean transparent;
-    public HitBoxModel hitBoxModel;
-
-    private Map<String, Boolean> options = new HashMap<>();
-
 
     public EntityModel(CuboidModel[] cuboidModels, boolean transparent) {
         this.cuboidModels = cuboidModels;
         this.origin = new Vector3();
         this.transparent = transparent;
-        this.hitBoxModel = EntityModel.makeHitBoxModel(cuboidModels);
     }
 
-    private static HitBoxModel makeHitBoxModel(CuboidModel[] cuboidModels) {
+    public HitBoxModel getHitBoxModel(ModelOptions modelOptions) {
+        //Optimization: Store generated HBMs
         if (cuboidModels.length == 0) throw new RuntimeException(String.format("%s model without elements!",EntityModel.class));
 
         Vector3 min = Vector3.max();
         Vector3 max = Vector3.min();
 
         for (CuboidModel model: cuboidModels) {
-            Vector3 minM = model.origin;
-            Vector3 maxM = model.origin.added(model.size);
-            min.x = Float.min(minM.x,min.x);
-            min.y = Float.min(minM.y,min.y);
-            min.z = Float.min(minM.z,min.z);
+            if (!model.shouldBeRendered(modelOptions)) continue;
 
-            max.x = Float.max(maxM.x,max.x);
-            max.y = Float.max(maxM.y,max.y);
-            max.z = Float.max(maxM.z,max.z);
+            for (ModelVertex vertex: model.getModelVertices(new Culling(true))) {
+                min.x = Float.min(vertex.x,min.x);
+                min.y = Float.min(vertex.y,min.y);
+                min.z = Float.min(vertex.z,min.z);
+
+                max.x = Float.max(vertex.x,max.x);
+                max.y = Float.max(vertex.y,max.y);
+                max.z = Float.max(vertex.z,max.z);
+            }
+
         }
 
         return new HitBoxModel(min,max);
@@ -47,11 +45,12 @@ public class EntityModel extends Model {
         return cuboidModels;
     }
 
+
     public int getVertexCount(Culling culling) {
-        return getVertexCount(culling, new HashMap<>());
+        return getVertexCount(culling, new ModelOptions());
     }
 
-    public int getVertexCount(Culling culling, Map<String, Boolean> options) {
+    public int getVertexCount(Culling culling, ModelOptions options) {
         int sum = 0;
         for (CuboidModel m: cuboidModels) {
             if (!m.shouldBeRendered(options)) continue;
@@ -61,10 +60,10 @@ public class EntityModel extends Model {
     }
 
     public ModelVertex[] getModelVertices(Culling culling) {
-        return getModelVertices(culling, new HashMap<>());
+        return getModelVertices(culling, new ModelOptions());
     }
 
-    public ModelVertex[] getModelVertices(Culling culling, Map<String, Boolean> options) {
+    public ModelVertex[] getModelVertices(Culling culling, ModelOptions options) {
         ModelVertex[] modelVertices = new ModelVertex[getVertexCount(culling,options)];
 
         int s = 0;

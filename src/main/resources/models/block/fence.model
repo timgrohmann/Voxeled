@@ -1,118 +1,23 @@
 {
-  "textures" : {
-    "post": "blocks/bdc_fence_post",
-    "crossbar": "blocks/bdc_fence_crossbar"
-  },
-  "elements": [
+  "parts": [
     {
-      "__comment": "post",
-      "from": [6,0,6],
-      "to": [10,16,10],
-      "faces": {
-        "down": { "uv": [ 0, 12, 4, 16 ], "texture": "#crossbar"},
-        "up": { "uv": [ 0, 12, 4, 16 ], "texture": "#crossbar" },
-        "north": { "uv": [ 0, 0, 4, 16 ], "texture": "#post" },
-        "south": { "uv": [ 0, 0, 4, 16 ], "texture": "#post" },
-        "west": { "uv": [ 0, 0, 4, 16 ], "texture": "#post" },
-        "east": { "uv": [ 0, 0, 4, 16 ], "texture": "#post" }
-      }
+      "name": "blocks/fence_post"
     },
     {
-      "__comment": "stick-north-1",
-      "from": [7,8,10],
-      "to": [9,10,16],
-      "faces": {
-        "down": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar"},
-        "up": { "uv": [ 6, 0, 8, 6 ], "rotation": 2, "texture": "#crossbar"},
-        "west": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar" },
-        "east": { "uv": [ 6, 0, 8, 6 ], "rotation": 1, "texture": "#crossbar" }
-      },
-      "if": {"north":true}
+      "if": "north=true",
+      "name": "fence_bar"
     },
     {
-      "__comment": "stick-north-2",
-      "from": [7,12,10],
-      "to": [9,14,16],
-      "faces": {
-        "down": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar"},
-        "up": { "uv": [ 6, 0, 8, 6 ], "rotation": 2, "texture": "#crossbar"},
-        "west": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar" },
-        "east": { "uv": [ 6, 0, 8, 6 ], "rotation": 1, "texture": "#crossbar" }
-      },
-      "if": {"north":true}
+      "if": "east=true",
+      "name": "fence_bar"
     },
     {
-      "__comment": "stick-south-1",
-      "from": [7,8,0],
-      "to": [9,10,6],
-      "faces": {
-        "down": { "uv": [ 8, 0, 10, 6 ], "rotation": -1, "texture": "#crossbar"},
-        "up": { "uv": [ 8, 0, 10, 6 ], "rotation": 2, "texture": "#crossbar"},
-        "west": { "uv": [ 8, 0, 10, 6 ], "rotation": -1, "texture": "#crossbar" },
-        "east": { "uv": [ 8, 0, 10, 6 ], "rotation": 1, "texture": "#crossbar" }
-      },
-      "if": {"south":true}
+      "if": "south=true",
+      "name": "fence_bar"
     },
     {
-      "__comment": "stick-south-2",
-      "from": [7,12,0],
-      "to": [9,14,6],
-      "faces": {
-        "down": { "uv": [ 8, 0, 10, 6 ], "rotation": -1, "texture": "#crossbar"},
-        "up": { "uv": [ 8, 0, 10, 6 ], "rotation": 2, "texture": "#crossbar"},
-        "west": { "uv": [ 8, 0, 10, 6 ], "rotation": -1, "texture": "#crossbar" },
-        "east": { "uv": [ 8, 0, 10, 6 ], "rotation": 1, "texture": "#crossbar" }
-      },
-      "if": {"south":true}
-    },
-    {
-      "__comment": "stick-west-1",
-      "from": [0,8,7],
-      "to": [6,10,9],
-      "faces": {
-        "down": { "uv": [ 6, 0, 8, 6 ], "texture": "#crossbar"},
-        "up": { "uv": [ 6, 0, 8, 6 ], "rotation": 1, "texture": "#crossbar"},
-        "north": { "uv": [ 6, 0, 8, 6 ], "rotation": 1, "texture": "#crossbar" },
-        "south": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar" }
-      },
-      "if": {"west":true}
-    },
-    {
-      "__comment": "stick-west-2",
-      "from": [0,12,7],
-      "to": [6,14,9],
-      "faces": {
-        "down": { "uv": [ 6, 0, 8, 6 ], "texture": "#crossbar"},
-        "up": { "uv": [ 6, 0, 8, 6 ], "rotation": 1, "texture": "#crossbar"},
-        "north": { "uv": [ 6, 0, 8, 6 ], "rotation": 1, "texture": "#crossbar" },
-        "south": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar" }
-      },
-      "if": {"west":true}
-    },
-    {
-      "__comment": "stick-east-1",
-      "from": [10,8,7],
-      "to": [16,10,9],
-      "faces": {
-        "down": { "uv": [ 8, 0, 10, 6 ], "texture": "#crossbar"},
-        "up": { "uv": [ 8, 0, 10, 6 ], "rotation": 1, "texture": "#crossbar"},
-        "north": { "uv": [ 8, 0, 10, 6 ], "rotation": 1, "texture": "#crossbar" },
-        "south": { "uv": [ 8, 0, 10, 6 ], "rotation": -1, "texture": "#crossbar" }
-      },
-      "if": {"east":true}
-    },
-    {
-      "__comment": "stick-east-2",
-      "from": [10,12,7],
-      "to": [16,14,9],
-      "faces": {
-        "down": { "uv": [ 8, 0, 10, 6 ], "texture": "#crossbar"},
-        "up": { "uv": [ 8, 0, 10, 6 ], "rotation": 1, "texture": "#crossbar"},
-        "north": { "uv": [ 8, 0, 10, 6 ], "rotation": 1, "texture": "#crossbar" },
-        "south": { "uv": [ 8, 0, 10, 6 ], "rotation": -1, "texture": "#crossbar" }
-      },
-      "if": {"east":true}
+      "if": "west=true",
+      "name": "fence_bar"
     }
-  ],
-  "*": []
+  ]
 }

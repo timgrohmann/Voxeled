@@ -11,7 +11,7 @@ public class Bedrock extends Block {
 
     @Override
     public void registerTextures() {
-        loadModel("block/bedrock");
+        loadModel("blocks/bedrock");
     }
 
     @Override

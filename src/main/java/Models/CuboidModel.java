@@ -12,7 +12,7 @@ public class CuboidModel extends Model {
 
     Map<CuboidFace.Face, CuboidFace> faces;
 
-    private Map<String, Boolean> options = new HashMap<>();
+    private ModelOptions options = new ModelOptions();
     //CuboidFace[] faces;
 
     public CuboidModel(Vector3 origin, Vector3 size) {
@@ -52,27 +52,36 @@ public class CuboidModel extends Model {
         return faces;
     }
 
-    public void setOptions(Map<String, Boolean> options) {
+    public void setOptions(ModelOptions options) {
         this.options = options;
     }
 
-    boolean shouldBeRendered(Map<String,Boolean> testOptions) {
+    public boolean shouldBeRendered(ModelOptions testOptions) {
 
-        for(Map.Entry<String, Boolean> entry : options.entrySet()) {
+        for(Map.Entry<String, String> entry : options.entrySet()) {
             String key = entry.getKey();
-            Boolean expectedValue = entry.getValue();
+            String expectedValue = entry.getValue();
 
-            Boolean testOptionsVal = testOptions.get(key);
+            String testOptionsVal = testOptions.get(key);
 
 
             if (testOptionsVal == null) {
                 return false;
-            } else if (testOptionsVal.booleanValue() != expectedValue) {
+            } else if (!testOptionsVal.equals(expectedValue)) {
                 return false;
             }
 
         }
 
         return true;
+    }
+
+    public void rotateY(int by, boolean uvLock) {
+        Map<CuboidFace.Face, CuboidFace> newFaces = new HashMap<>();
+        for (CuboidFace face: faces.values()) {
+            face.rotateY(by, uvLock);
+            newFaces.put(face.face, face);
+        }
+        faces = newFaces;
     }
 }

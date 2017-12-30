@@ -26,14 +26,14 @@ public class Tree extends Structure {
         for (int i = -2; i <=2 ; i++) {
             for (int j = -2; j <= 2; j++) {
                 if ((i == -1 || i == 0 || i == 1) && (j == -1 || j == 0 || j == 1)){
-                    world.setBlockForCoordinates(Block.Type.LEAF, this.x + i, this.y + height, this.z + j);
-                    //entityArrayList.add(new Block(this.x + i, this.y + height, this.z + j, Block.Type.LEAF));
+                    world.setBlockForCoordinates(Block.Type.LEAVES, this.x + i, this.y + height, this.z + j);
+                    //entityArrayList.add(new Block(this.x + i, this.y + height, this.z + j, Block.Type.LEAVES));
                 }
 
 
                 if (i == 0 && j == 0) continue;
-                world.setBlockForCoordinates(Block.Type.LEAF, this.x + i, this.y + height - 2, this.z + j);
-                world.setBlockForCoordinates(Block.Type.LEAF, this.x + i, this.y + height - 1, this.z + j);
+                world.setBlockForCoordinates(Block.Type.LEAVES, this.x + i, this.y + height - 2, this.z + j);
+                world.setBlockForCoordinates(Block.Type.LEAVES, this.x + i, this.y + height - 1, this.z + j);
 
 
             }

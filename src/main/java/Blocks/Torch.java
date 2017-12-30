@@ -12,7 +12,7 @@ public class Torch extends Block {
 
     @Override
     public void registerTextures() {
-        loadModel("block/normal_torch");
+        loadModel("blocks/torch");
     }
 
     /*@Override
