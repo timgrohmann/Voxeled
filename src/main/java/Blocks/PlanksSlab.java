@@ -2,7 +2,7 @@ package Blocks;
 
 import Entities.Block;
 import GL_Math.Vector3;
-import Main_Package.Player;
+import Player.Player;
 import Models.Vertex;
 import World.Chunk;
 
@@ -40,8 +40,4 @@ public class PlanksSlab extends Block {
         return true;
     }
 
-    @Override
-    public Vertex[] getVertices() {
-        return super.getVertices();
-    }
 }

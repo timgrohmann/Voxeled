@@ -1,15 +1,12 @@
 package Textures;
 
 import Entities.Block;
-import Main_Package.Log;
 import Models.CuboidFace;
 import Models.CuboidModel;
 import Models.EntityModel;
 import Registry.BlockRegistry;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.CallbackI;
 
 import java.util.ArrayList;
 
@@ -66,7 +63,7 @@ public class BlockTextures {
         TextureLoader[] textureLoaders = new TextureLoader[textures.length];
 
         for (int i = 0; i < textures.length; i++) {
-            TextureLoader loader = TextureLoader.load("textures/PureBDcraft  16x MC112/assets/minecraft/textures/" + textures[i].name + ".png");
+            TextureLoader loader = TextureLoader.load("textures/default/textures/" + textures[i].name + ".png");
 
             int texCount = loader.tHeight / TEXTURE_SIZE;
             textureLoaders[i] = loader;
@@ -81,12 +78,11 @@ public class BlockTextures {
             TextureLoader loader = textureLoaders[i];
 
             int texCount = loader.tHeight / TEXTURE_SIZE;
-            System.out.format("name: %s count: %d%n", textures[i].name, texCount);
 
             glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, currentLayer, TEXTURE_SIZE, TEXTURE_SIZE, texCount, GL_RGBA, GL_UNSIGNED_BYTE, loader.buf);
 
-            textures[i].layer = currentLayer;
-            textures[i].layerCount = texCount;
+            textures[i].setLayer(currentLayer);
+            textures[i].setLayerCount(texCount);
 
             currentLayer += texCount;
         }

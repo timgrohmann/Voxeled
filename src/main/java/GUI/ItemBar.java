@@ -9,5 +9,10 @@ public class ItemBar extends UIBasicTexturedComponent {
 
     public ItemBar(Vector2 pos, float width, boolean center) {
         super(pos, width, center, UV_ORIGIN, UV_SIZE);
+        this.textureDescriptor = GUIDrawer.WIDGET_TEXTURE;
+    }
+
+    public Vector2 positionForSlot(int i) {
+        return this.pos.added(new Vector2(i * this.size.x / 9, 0));
     }
 }

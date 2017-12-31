@@ -1,7 +1,6 @@
 package Entities;
 
 import GL_Math.Vector3;
-import Models.Vertex;
 
 public class HitBox {
     Vector3 minCorner;

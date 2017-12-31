@@ -1,8 +1,6 @@
 package Entities;
 
 import GL_Math.Vector3;
-import Models.Model;
-import Models.Vertex;
 
 abstract public class Entity {
 

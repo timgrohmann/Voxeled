@@ -4,7 +4,7 @@ import GL_Math.*;
 
 public class Camera {
     private final Vector3 pos;
-    float heading;
+    public float heading;
 
     private float pitch;
     private float aFloat;

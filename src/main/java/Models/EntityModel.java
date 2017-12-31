@@ -1,9 +1,6 @@
 package Models;
 
 import GL_Math.Vector3;
-import org.lwjgl.system.CallbackI;
-
-import java.util.*;
 
 public class EntityModel extends Model {
     private CuboidModel[] cuboidModels;

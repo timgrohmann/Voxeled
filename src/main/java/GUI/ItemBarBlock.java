@@ -6,11 +6,9 @@ import Entities.Block;
 import GL_Math.Matrix4;
 import GL_Math.Vector2;
 import GL_Math.Vector3;
-import Main_Package.GL_Window;
 import Main_Package.Renderer;
 import Shader.GUITextured2DShaderProgram;
 import Shader.WorldShaderProgram;
-import Textures.BlockTextures;
 
 public class ItemBarBlock extends UIBasicTexturedComponent {
 
@@ -27,8 +25,8 @@ public class ItemBarBlock extends UIBasicTexturedComponent {
     private final Triangle2DABO guiABO;
     private final Matrix4 itemBarBlockProjection;
 
-    public ItemBarBlock(Vector2 pos, float width, boolean center, GUIDrawer guiDrawer) {
-        super(pos, width, center, UV_ORIGIN, UV_SIZE);
+    public ItemBarBlock(float width, GUIDrawer guiDrawer) {
+        super(Vector2.zero(), width, false, UV_ORIGIN, UV_SIZE);
         initialPos = pos.copy();
 
         this.r = guiDrawer.renderer;
@@ -51,7 +49,12 @@ public class ItemBarBlock extends UIBasicTexturedComponent {
         generateVertices();
     }
 
-    public void render(Block b, int slot) {
+    public void render(Block b, Vector2 pos) {
+        this.pos.x = pos.x;
+        this.pos.y = pos.y;
+        generateVertices();
+
+
         blockShader.use();
         inventoryBlockABO.load(b.getVertices());
         r.activateBlockTextures();
@@ -62,7 +65,7 @@ public class ItemBarBlock extends UIBasicTexturedComponent {
 
 
         guiShader.use();
-        setScrollState(slot);
+
         guiABO.load(this.getVertices());
 
         itemBarFBO.activateTexture();

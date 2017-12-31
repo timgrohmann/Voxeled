@@ -1,7 +1,6 @@
 package Buffers;
 
 import GL_Math.Vector3;
-import Main_Package.Log;
 import Models.Vertex;
 import Shader.ShaderProgram;
 import org.lwjgl.opengl.GL20;
@@ -29,7 +28,7 @@ public class BlockABO extends ArrayBufferObject {
             values[i * STRIDE + 2] = vertices[i].z;
             values[i * STRIDE + 3] = vertices[i].u;
             values[i * STRIDE + 4] = vertices[i].v;
-            values[i * STRIDE + 5] = vertices[i].texture.layer;
+            values[i * STRIDE + 5] = vertices[i].texture.getLayer();
             values[i * STRIDE + 6] = normals[i].x;
             values[i * STRIDE + 7] = normals[i].y;
             values[i * STRIDE + 8] = normals[i].z;
@@ -39,7 +38,7 @@ public class BlockABO extends ArrayBufferObject {
             values[i * STRIDE + 10] = blendColor.y;
             values[i * STRIDE + 11] = blendColor.z;
 
-            values[i * STRIDE + 12] = vertices[i].texture.layerCount;
+            values[i * STRIDE + 12] = vertices[i].texture.getLayerCount();
         }
         //glBindBuffer(GL_ARRAY_BUFFER, id);
         glBufferData(GL_ARRAY_BUFFER,values,GL_DYNAMIC_DRAW);

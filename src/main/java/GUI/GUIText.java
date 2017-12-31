@@ -14,9 +14,8 @@ class GUIText extends UIComponent {
     public GUIText(String text, Vector2 pos, float letterHeight, boolean centered) {
         super(pos,new Vector2(letterHeight * text.length(), letterHeight), centered);
 
-
         this.text = text;
-
+        this.textureDescriptor = GUIDrawer.TEXT_TEXTURE;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package Main_Package;
 
+import GL_Math.Vector2;
 import org.lwjgl.glfw.*;
 import org.lwjgl.system.*;
 
@@ -16,7 +17,7 @@ public class GL_Window {
     int height;
     int width;
 
-    final long identifier;
+    public final long identifier;
 
     private ArrayList<GLFWKeyCallbackI> callbacks;
 
@@ -111,6 +112,15 @@ public class GL_Window {
 
     void setCursorPosToCenter() {
         glfwSetCursorPos(identifier,width/2,height/2);
+    }
+
+    Vector2 getMousePos() {
+        double[] x = new double[1];
+        double[] y = new double[1];
+
+        glfwGetCursorPos(identifier,x,y);
+
+        return new Vector2((float) x[0], (float) y[0]);
     }
 
     public float getAspectRatio() {

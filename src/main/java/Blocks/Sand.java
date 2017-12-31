@@ -1,7 +1,5 @@
 package Blocks;
 
-import Entities.Block;
-import Entities.FallingBlock;
 import GL_Math.Vector3;
 import World.Chunk;
 

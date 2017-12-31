@@ -1,10 +1,31 @@
 {
   "parts": [
     {
-      "name": "block/torch_flame"
+      "name": "block/torch_flame",
+      "if": {"facing": "down"}
     },
     {
-      "name": "block/normal_torch"
+      "name": "block/normal_torch",
+      "if": {"facing": "down"}
+    },
+    {
+      "name": "block/normal_torch_side",
+      "if": {"facing": "west"}
+    },
+    {
+      "name": "block/normal_torch_side",
+      "rotation": 1,
+      "if": {"facing": "north"}
+    },
+    {
+      "name": "block/normal_torch_side",
+      "rotation": 2,
+      "if": {"facing": "east"}
+    },
+    {
+      "name": "block/normal_torch_side",
+      "rotation": -1,
+      "if": {"facing": "south"}
     }
   ]
 }

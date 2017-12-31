@@ -19,7 +19,7 @@ public class Vector2 {
         this.y = 0;
     }
 
-    public static Vector2 zero = new Vector2(0, 0);
+    public static Vector2 zero() { return new Vector2(0, 0); }
 
     public Vector2 normalize() {
         float m = mag();

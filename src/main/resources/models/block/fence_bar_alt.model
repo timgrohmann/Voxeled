@@ -1,7 +1,7 @@
 {
   "textures" : {
-    "post": "blocks/bdc_fence_post",
-    "crossbar": "blocks/bdc_fence_crossbar"
+    "post": "blocks/planks_oak",
+    "crossbar": "blocks/planks_oak"
   },
   "elements": [
     {

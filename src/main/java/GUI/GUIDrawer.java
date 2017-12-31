@@ -1,6 +1,5 @@
 package GUI;
 
-import Buffers.BlockABO;
 import Buffers.GUILineABO;
 import Buffers.GUISelectionABO;
 import Buffers.Triangle2DABO;
@@ -9,19 +8,13 @@ import GL_Math.Matrix4;
 import GL_Math.Vector2;
 import GL_Math.Vector3;
 import Main_Package.Renderer;
-import Models.CuboidFace;
-import Models.GUITexturedVertex;
 import Models.GUIVertex;
-import Models.Vertex;
 import Shader.GUI2DShaderProgram;
 import Shader.GUISelectionShaderProgram;
 import Shader.GUITextured2DShaderProgram;
 import Shader.WorldShaderProgram;
-import Textures.Texture;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class GUIDrawer {
     final Renderer renderer;
@@ -34,23 +27,23 @@ public class GUIDrawer {
     private GUILineABO arrayBuffer;
     private GUISelectionABO arrayBuffer3D;
     Triangle2DABO mainGuiBuffer;
-    private BlockABO inventroyBlockABO;
 
     private ItemBar itemBar;
     private ItemBarSelector itemBarSelector;
-
     private ItemBarBlock itemBarBlock;
-    private ItemBarFBO itemBarFBO;
-    private Matrix4 itemBarBlockProjection;
+    private InventoryUI inventoryUI;
 
     public boolean menuShown = false;
+    public boolean inventoryShown = false;
 
     private Block highlightedBlock;
 
-    private final GUITexture guiTexture;
+    private final Map<String, GUITexture> textureMap = new HashMap<>();
 
-    private List<GUITexturedVertex> mainVertices = new ArrayList<>();
-    private List<GUITexturedVertex> textVertices = new ArrayList<>();
+    public static GUITextureDescriptor WIDGET_TEXTURE = new GUITextureDescriptor("textures/default/textures/gui/widgets.png", false);
+    public static GUITextureDescriptor TEXT_TEXTURE = new GUITextureDescriptor("src/main/resources/text.png", true);
+
+    public GUIMouseControl mouseControl;
 
     public GUIDrawer(Renderer renderer) {
         this.renderer = renderer;
@@ -63,8 +56,6 @@ public class GUIDrawer {
             e.printStackTrace();
         }
 
-        guiTexture = new GUITexture();
-        guiTexture.load();
         load();
     }
 
@@ -75,26 +66,35 @@ public class GUIDrawer {
         arrayBuffer3D = new GUISelectionABO(selectionShaderProgram);
 
         mainGuiBuffer = new Triangle2DABO(this.guiTextured2DShaderProgram);
-        inventroyBlockABO = new BlockABO(this.inventoryBlockShaderProgram);
+        //inventroyBlockABO = new BlockABO(this.inventoryBlockShaderProgram);
 
         itemBar = new ItemBar(new Vector2(0, -0.85f), 1.8f, true);
         itemBarSelector = new ItemBarSelector(new Vector2(-0.8f,-0.85f),0.2f,true);
 
-        itemBarBlock = new ItemBarBlock(new Vector2(-0.8f,-0.85f),0.2f,true, this);
-        itemBarFBO = new ItemBarFBO(renderer.getWindow());
+        itemBarBlock = new ItemBarBlock(0.2f, this);
+        //itemBarFBO = new ItemBarFBO(renderer.getWindow());
+        mouseControl = new GUIMouseControl(this);
+        inventoryUI = new InventoryUI(new Vector2(0,0), 2, true,renderer.player.inventory, this);
+        mouseControl.registerComponent(inventoryUI);
     }
 
-    private float a = 0;
     public void renderStaticGUI(Matrix4 matrix4) {
+
+        boolean itemBarShown = true;
+
+
         if (menuShown) {
             GUIButton closeButton = new GUIButton(new Vector2(0,0), 1.6f,"Spiel beenden?");
-            renderComponent(closeButton);
-        } else {
-            renderCrosshair(matrix4);
-            renderComponent(itemBar);
-            itemBarSelector.setScrollState(renderer.player.selectedSlot);
-            renderComponent(itemBarSelector);
+            renderButton(closeButton);
         }
+        if (!menuShown) renderCrosshair(matrix4);
+
+
+        if (inventoryShown) {
+            render(inventoryUI);
+            inventoryUI.render();
+        }
+
 
         //Debug info
         GUIText chunkText = new GUIText(String.format("Chunks loaded: %d", renderer.world.chunks.size()),
@@ -102,59 +102,49 @@ public class GUIDrawer {
         GUIText coordText = new GUIText(String.format("x: %.2f y: %.2f, z: %.2f", renderer.player.getPos().x, renderer.player.getPos().y, renderer.player.getPos().z),
                 new Vector2(-renderer.getWindow().getAspectRatio() + 0.01f, 0.99f - 0.05f),0.04f, false);
 
-        renderComponent(chunkText);
-        renderComponent(coordText);
-
-        //Actual render pass
-
-        guiTextured2DShaderProgram.use();
-        guiTextured2DShaderProgram.setUniformFloat("aspect", renderer.getWindow().getAspectRatio());
-        guiTextured2DShaderProgram.setUniformInt("texture_diffuse", 1);
-
-        Renderer.setDepthTest(false);
-        Renderer.setFaceCulling(false);
-
-        mainGuiBuffer.load(mainVertices);
-        guiTexture.activateMainTextures();
-        mainGuiBuffer.render();
-
-        mainGuiBuffer.load(textVertices);
-        guiTexture.activateTextTextures();
-        mainGuiBuffer.render();
-
-        mainVertices.clear();
-        textVertices.clear();
-
+        render(chunkText);
+        render(coordText);
 
 
         //Render blocks in inventory
+        if (itemBarShown) {
+            render(itemBar);
+            itemBarSelector.setScrollState(renderer.player.selectedSlot);
+            render(itemBarSelector);
+            itemBarBlock.setUp();
 
-        itemBarBlock.setUp();
-
-
-
-        Block[] inv = renderer.player.inventory();
-        for (int i = 0; i < 9; i++) {
-            Block invBlock = inv[i];
-            if (invBlock == null) continue;
-            itemBarBlock.render(invBlock, i);
+            Block[] inv = renderer.player.inventory.barBlocks;
+            for (int i = 0; i < 9; i++) {
+                Block invBlock = inv[i];
+                if (invBlock == null) continue;
+                itemBarBlock.render(invBlock, itemBar.positionForSlot(i));
+            }
         }
 
         Renderer.setFaceCulling(true);
         Renderer.setDepthTest(true);
     }
 
-    private void renderComponent(UIBasicTexturedComponent component) {
-        mainVertices.addAll(component.getVerticesList());
+    private void mainRenderSetup() {
+        Renderer.setDepthTest(false);
+        Renderer.setFaceCulling(false);
+        guiTextured2DShaderProgram.use();
+        guiTextured2DShaderProgram.setUniformFloat("aspect", renderer.getWindow().getAspectRatio());
+        guiTextured2DShaderProgram.setUniformInt("texture_diffuse", 1);
     }
 
-    private void renderComponent(GUIButton button) {
-        mainVertices.addAll(button.getVerticesList());
-        textVertices.addAll(button.getText().getVerticesList());
+    private void render(UIComponent component) {
+        mainRenderSetup();
+        GUITexture tex = textureMap.computeIfAbsent(component.textureDescriptor.texturePath,
+                k -> new GUITexture(1).load(component.textureDescriptor.texturePath, component.textureDescriptor.interpolate));
+        tex.bind();
+        mainGuiBuffer.load(component.getVertices());
+        mainGuiBuffer.render();
     }
 
-    private void renderComponent(GUIText text) {
-        textVertices.addAll(text.getVerticesList());
+    private void renderButton(GUIButton component) {
+        render(component);
+        render(component.getText());
     }
 
     private void renderCrosshair(Matrix4 matrix4) {

@@ -1,7 +1,8 @@
-package Main_Package;
+package Player;
 
 import Entities.*;
 import GL_Math.Vector3;
+import Main_Package.Renderer;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,7 +21,7 @@ public class Player extends Entity implements Collidable{
 
     private HitBox hitBox;
 
-    private final Renderer renderer;
+    final Renderer renderer;
 
     private boolean onGround = false;
     private boolean walkedInThisTick = false;
@@ -32,6 +33,7 @@ public class Player extends Entity implements Collidable{
     private static final float EYE_HEIGHT = 1.6f;
 
     public int selectedSlot = 0;
+    public Inventory inventory;
 
     private float walkBumpState = 0;
 
@@ -44,6 +46,7 @@ public class Player extends Entity implements Collidable{
         speed = Vector3.zero();
         acc = Vector3.zero();
         hitBox = new HitBox(new Vector3(-0.4f,0,-0.4f), new Vector3(0.4f,1.8f,0.4f), this);
+        inventory = new Inventory(this);
     }
 
     @Override
@@ -217,22 +220,8 @@ public class Player extends Entity implements Collidable{
         this.acc.z += z;
     }
 
-    public Block[] inventory() {
-        return new Block[]{
-                renderer.registry.getBlockSingletonForType(Block.Type.FENCE),
-                renderer.registry.getBlockSingletonForType(Block.Type.DIRT),
-                renderer.registry.getBlockSingletonForType(Block.Type.WOOD),
-                renderer.registry.getBlockSingletonForType(Block.Type.PLANKS),
-                renderer.registry.getBlockSingletonForType(Block.Type.LEAVES),
-                renderer.registry.getBlockSingletonForType(Block.Type.SAND),
-                renderer.registry.getBlockSingletonForType(Block.Type.GRASS),
-                renderer.registry.getBlockSingletonForType(Block.Type.TORCH),
-                renderer.registry.getBlockSingletonForType(Block.Type.PLANKS_SLAB),
-        };
-    }
-
     public Block getSelectedBlock() {
-        return inventory()[selectedSlot];
+        return inventory.barBlocks[selectedSlot];
     }
 
     @Override

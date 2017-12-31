@@ -2,13 +2,12 @@ package Entities;
 
 import Blocks.*;
 import GL_Math.Vector3;
-import Main_Package.Player;
+import Player.Player;
 import Models.*;
 import Registry.BlockRegistry;
 import World.Chunk;
 
 import java.lang.reflect.Constructor;
-import java.util.HashMap;
 import java.util.Map;
 
 abstract public class Block extends DrawableEntity implements Collidable {
@@ -135,6 +134,7 @@ abstract public class Block extends DrawableEntity implements Collidable {
         PLANKS_SLAB(12, PlanksSlab.class),
         TORCH(13, Torch.class),
         FENCE(14, Fence.class),
+        GLASS(15, Glass.class),
         TEST_TYPE(250, TestBlock.class);
 
         final byte store_value;
@@ -221,8 +221,8 @@ abstract public class Block extends DrawableEntity implements Collidable {
     public int getZPos() {return (int) this.pos.z;}
 
 
-    public boolean shouldMakeVertices() {
-        return this.type != Type.__TREE_SPAWNER;
+    public boolean technicalBlock() {
+        return this.type == Type.__TREE_SPAWNER;
     }
 
     @Override

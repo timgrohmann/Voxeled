@@ -2,15 +2,12 @@ package World;
 
 import Buffers.BlockABO;
 import Entities.Block;
-import Entities.Entity;
 import GL_Math.Vector3;
 import Models.CuboidFace;
 import Models.Vertex;
 import Structures.Tree;
 
 import java.io.FileOutputStream;
-import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Defines a 16x16 block area
@@ -239,7 +236,7 @@ public class Chunk {
     private int getVertexCount() {
         int c = 0;
         for (Block e: blocks) {
-            if (e == null || !e.shouldMakeVertices() || e.transparent) continue;
+            if (e == null || e.technicalBlock() || e.transparent) continue;
             c += e.vertexCount();
         }
         return c;
@@ -248,7 +245,7 @@ public class Chunk {
     private int getTransparentVertexCount() {
         int c = 0;
         for (Block e: blocks) {
-            if (e == null || !e.shouldMakeVertices() || !e.transparent) continue;
+            if (e == null || e.technicalBlock() || !e.transparent) continue;
             c += e.vertexCount();
         }
         return c;
@@ -260,7 +257,7 @@ public class Chunk {
 
         int currentPos = 0;
         for (Block block: blocks) {
-            if (block == null || !block.shouldMakeVertices() || block.transparent) continue;
+            if (block == null || block.technicalBlock() || block.transparent) continue;
             Vertex[] entityVertices = block.getVertices();
             for (Vertex entityVertex: entityVertices) {
                 vertices[currentPos] = entityVertex;
@@ -277,7 +274,7 @@ public class Chunk {
 
         int currentPos = 0;
         for (Block block: blocks) {
-            if (block == null || !block.shouldMakeVertices() || !block.transparent) continue;
+            if (block == null || block.technicalBlock() || !block.transparent) continue;
             Vertex[] entityVertices = block.getVertices();
             for (Vertex entityVertex: entityVertices) {
                 vertices[currentPos] = entityVertex;

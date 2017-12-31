@@ -2,9 +2,7 @@ package GUI;
 
 import GL_Math.Vector2;
 import Models.GUITexturedVertex;
-import org.lwjgl.system.CallbackI;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,6 +12,9 @@ abstract public class UIComponent {
     protected GUITexturedVertex[] vertices;
 
     private static float TEXTURE_SIZE = 256;
+
+    public GUITextureDescriptor textureDescriptor;
+
 
     public UIComponent(Vector2 pos, Vector2 size, boolean centered) {
         this.pos = pos;

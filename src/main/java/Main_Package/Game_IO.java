@@ -1,9 +1,10 @@
 package Main_Package;
 
-import Blocks.Planks;
 import Entities.Block;
 import Entities.HitBox;
+import GL_Math.Vector2;
 import GL_Math.Vector3;
+import Player.Player;
 import org.lwjgl.glfw.GLFWKeyCallbackI;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -57,7 +58,12 @@ public class Game_IO {
     }
 
     void update() {
-        if (!menuShown) handleBlockInteraction(renderer.player);
+        if (!menuShown) {
+            handleBlockInteraction(renderer.player);
+        } else if (mouseLeftJustPressed) {
+            Vector2 mousePos = renderer.getWindow().getMousePos();
+            renderer.guiDrawer.mouseControl.click(mousePos);
+        }
 
         mouseLeftJustPressed = false;
         mouseRightJustPressed = false;
@@ -65,6 +71,7 @@ public class Game_IO {
 
     private final GLFWKeyCallbackI keyInput = (long window, int key, int scancode, int action, int mods) -> {
         if (key == GLFW_KEY_M && action == GLFW_PRESS) toggleMenu();
+        if (key == GLFW_KEY_E && action == GLFW_PRESS) toggleInventory();
     };
 
     private void handleBlockInteraction(Player p) {
@@ -121,7 +128,7 @@ public class Game_IO {
             boolean shouldPlace = selected.secondaryInteraction(p);
 
             if (shouldPlace) {
-                Block t = renderer.player.inventory()[renderer.player.selectedSlot];
+                Block t = renderer.player.getSelectedBlock();
                 if (t != null){
                     Block newBlock = renderer.world.setBlockForCoordinates(t.type, selected.getXPos() + xDif, selected.getYPos() + yDif, selected.getZPos() + zDif);
                     newBlock.updateOptionsWithPlacePos(pos);
@@ -131,17 +138,30 @@ public class Game_IO {
     }
 
     private void toggleMenu() {
-        if (!menuShown) {
+        if (!renderer.guiDrawer.menuShown) {
             //show
             cameraIo.disableMouseTracking();
             renderer.guiDrawer.menuShown = true;
+            menuShown = true;
         } else {
             //hide
             cameraIo.enableMouseTracking();
             renderer.guiDrawer.menuShown = false;
+            menuShown = false;
         }
 
-        menuShown = !menuShown;
+    }
+
+    private void toggleInventory() {
+        if (renderer.guiDrawer.inventoryShown) {
+            cameraIo.enableMouseTracking();
+            renderer.guiDrawer.inventoryShown = false;
+            menuShown = false;
+        } else {
+            cameraIo.disableMouseTracking();
+            renderer.guiDrawer.inventoryShown = true;
+            menuShown = true;
+        }
     }
 
 }

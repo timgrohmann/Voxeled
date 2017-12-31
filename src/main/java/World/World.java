@@ -3,11 +3,9 @@ package World;
 import Buffers.BlockABO;
 import Entities.Block;
 import Entities.DrawableEntity;
-import Entities.Entity;
 import GL_Math.Matrix4;
 import GL_Math.Vector3;
 import Models.Vertex;
-import Shader.WorldShaderProgram;
 import Textures.BlockTextures;
 import Main_Package.Renderer;
 
@@ -344,8 +342,8 @@ public class World {
      * <b>Updates whole world</b>
      */
     public void tick() {
-        this.addNearChunksToLoadList(renderer.camera.getPosition(), 3);
-        this.unloadChunksOutsideOf(renderer.camera.getPosition(),5);
+        this.addNearChunksToLoadList(renderer.player.getPos(), 3);
+        this.unloadChunksOutsideOf(renderer.player.getPos(),5);
 
         this.loadOneChunk();
 

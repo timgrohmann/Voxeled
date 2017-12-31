@@ -4,7 +4,6 @@ import GL_Math.Vector2;
 import GL_Math.Vector3;
 import Textures.Texture;
 import org.json.*;
-import org.lwjgl.system.CallbackI;
 
 import java.io.InputStream;
 import java.util.*;

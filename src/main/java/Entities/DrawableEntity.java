@@ -2,7 +2,6 @@ package Entities;
 
 import GL_Math.Vector3;
 import Models.EntityModel;
-import Models.Model;
 import Models.Vertex;
 
 abstract public class DrawableEntity extends Entity {

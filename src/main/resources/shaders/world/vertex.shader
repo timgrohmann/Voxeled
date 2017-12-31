@@ -14,6 +14,7 @@ uniform int animationFrame;
 
 out vec3 UVW;
 out vec3 blendColor;
+//out vec3 normal;
 out float lightness;
 
 float diff_light = 0.5;
@@ -25,6 +26,7 @@ void main(void) {
 
     lightness = (clamp(dot(normalize(in_Normal), normalize(light_dir)), 0, 1) * (1-diff_light) + diff_light);
     UVW = in_UVW;
+    //normal = in_Normal;
     UVW.z += mod(animationFrame, in_LayerCount);
     blendColor = in_BlendColor;
 }

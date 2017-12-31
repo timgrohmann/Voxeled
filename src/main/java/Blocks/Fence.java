@@ -5,9 +5,6 @@ import GL_Math.Vector3;
 import Models.CuboidFace;
 import World.Chunk;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Fence extends Block{
     public Fence(Vector3 pos, Chunk chunk) {
         super(pos, Type.FENCE, chunk);

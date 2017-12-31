@@ -5,8 +5,8 @@
   "elements": [
     {
       "__comment": "torch",
-      "from": [ 6.5, 8, 6.5 ],
-      "to": [ 9.5, 12, 9.5 ],
+      "from": [ 0, 8, 6.5 ],
+      "to": [ 2, 12, 9.5 ],
       "faces": {
         "down": { "uv": [ 7, 6, 9, 9 ], "texture": "#torch"},
         "up": { "uv": [ 7, 6, 9, 9 ], "texture": "#torch" },
@@ -18,8 +18,8 @@
     },
     {
       "__comment": "stick",
-      "from": [ 7, 0, 7 ],
-      "to": [ 9, 9, 9 ],
+      "from": [ 0, 0, 7 ],
+      "to": [ 2, 9, 9 ],
       "faces": {
         "down": { "uv": [ 7, 14, 8, 16 ], "texture": "#torch"},
         "north": { "uv": [ 7, 8, 8, 16 ], "texture": "#torch" },

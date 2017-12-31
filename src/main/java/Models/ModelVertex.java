@@ -2,7 +2,6 @@ package Models;
 
 import GL_Math.Vector3;
 import Textures.Texture;
-import org.json.Test;
 
 public class ModelVertex {
     public float x;

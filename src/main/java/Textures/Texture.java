@@ -3,9 +3,9 @@ package Textures;
 import GL_Math.Vector3;
 
 public class Texture{
-    public int layer = -1;
+    private int layer = -1;
 
-    public int layerCount = 1;
+    private int layerCount = 1;
 
     public final String name;
     public final Vector3 blendColor;
@@ -17,6 +17,22 @@ public class Texture{
         } else {
             blendColor = new Vector3(1,1,1);
         }
+    }
+
+    public int getLayer() {
+        return layer;
+    }
+
+    public int getLayerCount() {
+        return layerCount;
+    }
+
+    public void setLayer(int layer) {
+        this.layer = layer;
+    }
+
+    public void setLayerCount(int layerCount) {
+        this.layerCount = layerCount;
     }
 
     public Texture(String name) {

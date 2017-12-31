@@ -1,7 +1,6 @@
 package Buffers;
 
 import GL_Math.Vector3;
-import Models.Vertex;
 import Shader.GUISelectionShaderProgram;
 import org.lwjgl.opengl.GL20;
 

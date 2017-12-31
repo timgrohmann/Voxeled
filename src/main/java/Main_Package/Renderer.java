@@ -4,6 +4,7 @@ import Entities.Entity;
 import GL_Math.Matrix4;
 import GL_Math.Vector3;
 import GUI.GUIDrawer;
+import Player.Player;
 import Registry.BlockRegistry;
 import Shader.WorldShaderProgram;
 import World.World;
@@ -33,14 +34,10 @@ public class Renderer {
     public Player player;
     private SkyBox skyBox;
 
-    private int matLocation;
-
     private final Matrix4 mat;
-    public Matrix4 perspectiveMatrix;
+    private Matrix4 perspectiveMatrix;
 
-    private float anim = 0;
-
-    private int chunkCoolDown = 0;
+    public float frameCount = 0;
 
 
     public Renderer(GL_Window window) {
@@ -109,9 +106,6 @@ public class Renderer {
 
         Vector3 lightDirection = new Vector3(2,5,1);
         worldShader.setUniformVector("light_dir", lightDirection);
-        worldShader.setUniformInt("animationFrame", 1);
-
-        matLocation = worldShader.uniformLocation("mat");
 
 
 
@@ -144,7 +138,8 @@ public class Renderer {
 
     private void render() {
         worldShader.use();
-        worldShader.setUniformInt("animationFrame",(int) anim);
+        worldShader.setUniformInt("animationFrame", (int) frameCount);
+
 
         mat.reset();
 
@@ -165,7 +160,7 @@ public class Renderer {
         Log.logGLError();
 
 
-        anim += 0.1;
+        frameCount += 0.1;
     }
 
     public GL_Window getWindow() {

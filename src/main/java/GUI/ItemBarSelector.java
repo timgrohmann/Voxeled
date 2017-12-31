@@ -11,6 +11,7 @@ public class ItemBarSelector extends UIBasicTexturedComponent{
     public ItemBarSelector(Vector2 pos, float width, boolean center) {
         super(pos, width, center, UV_ORIGIN, UV_SIZE);
         initialPos = pos.copy();
+        this.textureDescriptor = GUIDrawer.WIDGET_TEXTURE;
     }
 
     public void setScrollState(int slot /*0-8*/) {
