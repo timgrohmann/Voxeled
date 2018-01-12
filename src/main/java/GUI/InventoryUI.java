@@ -22,6 +22,8 @@ public class InventoryUI extends UIBasicTexturedComponent implements Interactabl
     }
 
     public void render() {
+        if (!isVisible()) return;
+
         ItemBarBlock itemBarBlock = new ItemBarBlock(BLOCK_SIZE, drawer);
         itemBarBlock.setUp();
 
@@ -41,29 +43,39 @@ public class InventoryUI extends UIBasicTexturedComponent implements Interactabl
 
     @Override
     public void click(Vector2 pos) {
-        if (GUIMouseControl.isInside(pos, this.pos, size)) {
-            for (int i = 0; i < 9; i++) {
-                for (int j = 0; j < 5; j++) {
-                    Vector2 subPos = posForLocation(i,j);
-                    Vector2 size = new Vector2(BLOCK_SIZE,BLOCK_SIZE);
-                    if (GUIMouseControl.isInside(pos, subPos, size)) {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 5; j++) {
+                Vector2 subPos = posForLocation(i,j);
+                Vector2 size = new Vector2(BLOCK_SIZE,BLOCK_SIZE);
+                if (GUIMouseControl.isInside(pos, subPos, size)) {
 
-                        select(i,j);
-                        return;
-                    }
+                    select(i,j);
+                    return;
                 }
             }
         }
     }
 
+    @Override
+    public GUIRectangle getRect() {
+        return new GUIRectangle(this.pos, this.size);
+    }
+
+    @Override
+    public boolean currentlyInteractable() {
+        return isVisible();
+    }
+
     private void select(int i, int j) {
         int ind = i + j * 9;
-        Block selectedBlock = inventory.inventoryBlocks.get(ind);
-        if (selectedBlock != null){
-            for (int k = inventory.barBlocks.length - 1; k >= 1; k--) {
-                inventory.barBlocks[k] = inventory.barBlocks[k-1];
+        try {
+            Block selectedBlock = inventory.inventoryBlocks.get(ind);
+            if (selectedBlock != null){
+                //Shifts the current bar blocks right by one
+                System.arraycopy(inventory.barBlocks, 0, inventory.barBlocks, 1, inventory.barBlocks.length - 1);
+                inventory.barBlocks[0] = selectedBlock;
             }
-            inventory.barBlocks[0] = selectedBlock;
-        }
+        } catch (IndexOutOfBoundsException ignored) { }
+
     }
 }

@@ -142,6 +142,7 @@ public class Chunk {
     private boolean visibilityCheck(Block thisBlock, Block otherBlock, CuboidFace.Face face) {
         if (otherBlock == null || (otherBlock.transparent && !thisBlock.transparent)) return true;
         if (otherBlock.model == null || thisBlock.model == null) return true;
+        if (thisBlock.transparent && otherBlock.transparent && thisBlock.type != otherBlock.type) return true;
         switch (face){
             case TOP:
                 return !cullingForBlock(thisBlock, CuboidFace.Face.TOP)

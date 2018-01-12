@@ -137,7 +137,7 @@ abstract public class Block extends DrawableEntity implements Collidable {
         GLASS(15, Glass.class),
         TEST_TYPE(250, TestBlock.class);
 
-        final byte store_value;
+        private final byte store_value;
 
         final Class<? extends Block> blockClass;
 

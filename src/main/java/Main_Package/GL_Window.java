@@ -102,6 +102,10 @@ public class GL_Window {
 
     }
 
+    public void close() {
+        glfwSetWindowShouldClose(identifier, true);
+    }
+
     void swapBuffers(){
         glfwSwapBuffers(this.identifier);
     }

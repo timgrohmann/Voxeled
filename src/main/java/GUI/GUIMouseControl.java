@@ -25,7 +25,13 @@ public class GUIMouseControl {
         Vector2 screenPos = new Vector2(mousePos.x / width * 2 - 1, -mousePos.y / height * 2 + 1);
         screenPos.x *= guiDrawer.renderer.getWindow().getAspectRatio();
 
-        components.forEach(k -> k.click(screenPos));
+        components.forEach(k -> {
+            if (k.currentlyInteractable() && GUIMouseControl.isInside(screenPos, k.getRect())) k.click(screenPos);
+        });
+    }
+
+    public static boolean isInside(Vector2 pos, GUIRectangle rec) {
+        return GUIMouseControl.isInside(pos, rec.origin, rec.size);
     }
 
     public static boolean isInside(Vector2 pos, Vector2 origin, Vector2 size) {

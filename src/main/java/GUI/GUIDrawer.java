@@ -31,6 +31,7 @@ public class GUIDrawer {
     private ItemBar itemBar;
     private ItemBarSelector itemBarSelector;
     private ItemBarBlock itemBarBlock;
+    private GUIButton closeButton;
     private InventoryUI inventoryUI;
 
     public boolean menuShown = false;
@@ -75,26 +76,27 @@ public class GUIDrawer {
         //itemBarFBO = new ItemBarFBO(renderer.getWindow());
         mouseControl = new GUIMouseControl(this);
         inventoryUI = new InventoryUI(new Vector2(0,0), 2, true,renderer.player.inventory, this);
+        closeButton = new GUIButton(new Vector2(0,0), 1.6f,"Spiel beenden?");
+
+        closeButton.setExecuter(renderer.getWindow()::close);
+
         mouseControl.registerComponent(inventoryUI);
+        mouseControl.registerComponent(closeButton);
     }
 
     public void renderStaticGUI(Matrix4 matrix4) {
 
         boolean itemBarShown = true;
 
+        closeButton.setVisible(menuShown);
+        renderButton(closeButton);
 
-        if (menuShown) {
-            GUIButton closeButton = new GUIButton(new Vector2(0,0), 1.6f,"Spiel beenden?");
-            renderButton(closeButton);
-        }
         if (!menuShown) renderCrosshair(matrix4);
 
 
-        if (inventoryShown) {
-            render(inventoryUI);
-            inventoryUI.render();
-        }
-
+        inventoryUI.setVisible(inventoryShown);
+        render(inventoryUI);
+        inventoryUI.render();
 
         //Debug info
         GUIText chunkText = new GUIText(String.format("Chunks loaded: %d", renderer.world.chunks.size()),
@@ -106,9 +108,12 @@ public class GUIDrawer {
         render(coordText);
 
 
+        //Render inventory bar
+        itemBar.setVisible(itemBarShown);
+        render(itemBar);
+
         //Render blocks in inventory
         if (itemBarShown) {
-            render(itemBar);
             itemBarSelector.setScrollState(renderer.player.selectedSlot);
             render(itemBarSelector);
             itemBarBlock.setUp();
@@ -134,6 +139,8 @@ public class GUIDrawer {
     }
 
     private void render(UIComponent component) {
+        if (!component.isVisible()) return;
+
         mainRenderSetup();
         GUITexture tex = textureMap.computeIfAbsent(component.textureDescriptor.texturePath,
                 k -> new GUITexture(1).load(component.textureDescriptor.texturePath, component.textureDescriptor.interpolate));

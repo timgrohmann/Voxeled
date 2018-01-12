@@ -11,6 +11,8 @@ abstract public class UIComponent {
     protected final Vector2 size;
     protected GUITexturedVertex[] vertices;
 
+    private boolean visible = true;
+
     private static float TEXTURE_SIZE = 256;
 
     public GUITextureDescriptor textureDescriptor;
@@ -40,6 +42,14 @@ abstract public class UIComponent {
     List<GUITexturedVertex> getVerticesList() {
         if (vertices == null || vertices.length == 0) generateVertices();
         return Arrays.asList(vertices);
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     static GUITexturedVertex[] texQuad(float minX, float minY, float minU, float minV,

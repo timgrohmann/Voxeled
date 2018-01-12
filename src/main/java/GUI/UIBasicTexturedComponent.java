@@ -6,6 +6,7 @@ abstract public class UIBasicTexturedComponent extends UIComponent {
     Vector2 uvOrigin;
     Vector2 uvSize;
 
+
     public UIBasicTexturedComponent(Vector2 pos, float width, boolean center, Vector2 uvOrigin, Vector2 uvSize) {
         super(pos, new Vector2(width, width * uvSize.y / uvSize.x), center);
         this.uvOrigin = uvOrigin;
