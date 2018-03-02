@@ -7,15 +7,15 @@ import Textures.Texture;
 import java.util.*;
 
 public class CuboidFace extends Model {
-    Vector2 uvOrigin;
-    Vector2 uvSize;
+    private Vector2 uvOrigin;
+    private Vector2 uvSize;
     public Face face;
-    public Texture texture;
+    private Texture texture;
     public boolean culling = true;
 
     private int rotation;
 
-    CuboidModel cuboidModel;
+    private CuboidModel cuboidModel;
 
 
     public CuboidFace(Vector2 uvOrigin, Vector2 uvSize, Face face, Texture texture, CuboidModel model, int rotation) {
@@ -102,7 +102,7 @@ public class CuboidFace extends Model {
         }
     }
 
-    List<ModelVertex> texturedVertices(Vector3[] untexturedPositions) {
+    private List<ModelVertex> texturedVertices(Vector3[] untexturedPositions) {
         return Arrays.asList(
                 new ModelVertex(untexturedPositions[0], uvOrigin.x, uvOrigin.y, texture),
                 new ModelVertex(untexturedPositions[1], uvOrigin.x + uvSize.x, uvOrigin.y, texture),

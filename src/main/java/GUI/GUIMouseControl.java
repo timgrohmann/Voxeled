@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GUIMouseControl {
-    GUIDrawer guiDrawer;
+    private GUIDrawer guiDrawer;
 
     private List<Interactable> components = new ArrayList<>();
 
@@ -18,7 +18,12 @@ public class GUIMouseControl {
         components.add(component);
     }
 
-    public void click (Vector2 mousePos) {
+    public void process(Vector2 mousePos, boolean clicked) {
+        if (clicked) click(mousePos);
+        hover(mousePos);
+    }
+
+    private void click(Vector2 mousePos) {
         float width = guiDrawer.renderer.getWindow().getWidth();
         float height = guiDrawer.renderer.getWindow().getHeight();
 
@@ -30,7 +35,17 @@ public class GUIMouseControl {
         });
     }
 
-    public static boolean isInside(Vector2 pos, GUIRectangle rec) {
+    private void hover(Vector2 mousePos) {
+        float width = guiDrawer.renderer.getWindow().getWidth();
+        float height = guiDrawer.renderer.getWindow().getHeight();
+
+        Vector2 screenPos = new Vector2(mousePos.x / width * 2 - 1, -mousePos.y / height * 2 + 1);
+        screenPos.x *= guiDrawer.renderer.getWindow().getAspectRatio();
+
+        components.forEach(k -> k.setHover(k.currentlyInteractable() && GUIMouseControl.isInside(screenPos, k.getRect())));
+    }
+
+    private static boolean isInside(Vector2 pos, GUIRectangle rec) {
         return GUIMouseControl.isInside(pos, rec.origin, rec.size);
     }
 

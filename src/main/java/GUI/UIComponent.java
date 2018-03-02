@@ -6,10 +6,10 @@ import Models.GUITexturedVertex;
 import java.util.Arrays;
 import java.util.List;
 
-abstract public class UIComponent {
-    protected final Vector2 pos;
-    protected final Vector2 size;
-    protected GUITexturedVertex[] vertices;
+abstract class UIComponent {
+    final Vector2 pos;
+    final Vector2 size;
+    GUITexturedVertex[] vertices;
 
     private boolean visible = true;
 
@@ -18,7 +18,7 @@ abstract public class UIComponent {
     public GUITextureDescriptor textureDescriptor;
 
 
-    public UIComponent(Vector2 pos, Vector2 size, boolean centered) {
+    UIComponent(Vector2 pos, Vector2 size, boolean centered) {
         this.pos = pos;
         this.size = size;
 
@@ -30,7 +30,7 @@ abstract public class UIComponent {
 
     abstract void generateVertices();
 
-    protected Vector2 centerPos() {
+    Vector2 centerPos() {
         return new Vector2(pos.x + size.x / 2, pos.y - size.y / 2);
     }
 

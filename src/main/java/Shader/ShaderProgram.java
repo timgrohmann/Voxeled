@@ -112,7 +112,7 @@ abstract public class ShaderProgram {
         return all.toString();
     }
 
-    public int uniformLocation(String name) {
+    private int uniformLocation(String name) {
         return glGetUniformLocation(program,name);
     }
 

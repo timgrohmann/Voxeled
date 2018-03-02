@@ -3,9 +3,9 @@ package Entities;
 import GL_Math.Vector3;
 
 public class HitBox {
-    Vector3 minCorner;
-    Vector3 maxCorner;
-    Entity linkedEntity;
+    private Vector3 minCorner;
+    private Vector3 maxCorner;
+    private Entity linkedEntity;
 
 
     public HitBox(Vector3 minCorner, Vector3 maxCorner, Entity linkedEntity) {

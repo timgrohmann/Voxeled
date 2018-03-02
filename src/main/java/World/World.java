@@ -185,7 +185,7 @@ public class World {
         updateBlocksAround(x,y,z);
     }
 
-    public void updateBlocksAround(int x, int y, int z) {
+    private void updateBlocksAround(int x, int y, int z) {
         setShouldUpdateBlockAt(x,y-1,z);
         setShouldUpdateBlockAt(x,y+1,z);
         setShouldUpdateBlockAt(x-1,y,z);
@@ -221,7 +221,7 @@ public class World {
      * Get block at integer position.
      * @return The block found.
      */
-    public Block getBlockForCoordinates(int x, int y, int z) {
+    private Block getBlockForCoordinates(int x, int y, int z) {
         if (y > Chunk.chunkHeight - 1 || y < 0) return null;
 
         int inChunkX = Math.floorMod(x, Chunk.chunkSize);

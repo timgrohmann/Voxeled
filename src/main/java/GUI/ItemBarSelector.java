@@ -2,7 +2,7 @@ package GUI;
 
 import GL_Math.Vector2;
 
-public class ItemBarSelector extends UIBasicTexturedComponent{
+class ItemBarSelector extends UIBasicTexturedComponent{
     private static Vector2 UV_ORIGIN = new Vector2(0,22);
     private static Vector2 UV_SIZE = new Vector2(24,24);
 

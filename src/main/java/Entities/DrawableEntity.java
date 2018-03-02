@@ -8,7 +8,7 @@ abstract public class DrawableEntity extends Entity {
     public abstract Vertex[] getVertices();
     abstract int vertexCount();
 
-    protected DrawableEntity(Vector3 pos) {
+    DrawableEntity(Vector3 pos) {
         super(pos);
     }
 

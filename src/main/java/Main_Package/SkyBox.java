@@ -16,7 +16,7 @@ class SkyBox {
 
     private final float size = 500;
 
-    float angle = 0;
+    private float angle = 0;
 
     public SkyBox() {
         skyBoxTexture = new SkyBoxTexture();

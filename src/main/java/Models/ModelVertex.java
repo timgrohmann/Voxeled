@@ -13,7 +13,7 @@ public class ModelVertex {
 
     public Texture texture;
 
-    public ModelVertex(float x, float y, float z, float u, float v, Texture texture) {
+    private ModelVertex(float x, float y, float z, float u, float v, Texture texture) {
         this.x = x;
         this.y = y;
         this.z = z;

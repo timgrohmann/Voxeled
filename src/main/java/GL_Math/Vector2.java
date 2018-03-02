@@ -36,7 +36,7 @@ public class Vector2 {
         return new float[]{x, y};
     }
 
-    public Vector2 multiply(float scalar) {
+    private Vector2 multiply(float scalar) {
         this.x *= scalar;
         this.y *= scalar;
         return this;
@@ -47,7 +47,7 @@ public class Vector2 {
         return copy.multiply(scalar);
     }
 
-    public Vector2 add(Vector2 adder) {
+    private Vector2 add(Vector2 adder) {
         this.x += adder.x;
         this.y += adder.y;
         return this;

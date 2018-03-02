@@ -23,7 +23,7 @@ public class BlockTextures {
 
     private int textureId = -1;
 
-    public Texture[] textures;
+    private Texture[] textures;
 
     private int TEXTURE_SIZE = 16;
 

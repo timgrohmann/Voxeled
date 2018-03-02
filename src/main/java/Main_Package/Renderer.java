@@ -27,7 +27,7 @@ public class Renderer {
     public final World world;
 
     public WorldShaderProgram worldShader;
-    public final Game_IO gameIO;
+    private final Game_IO gameIO;
     public final Camera camera;
     public final BlockRegistry registry;
     GUIDrawer guiDrawer;
@@ -37,7 +37,7 @@ public class Renderer {
     private final Matrix4 mat;
     private Matrix4 perspectiveMatrix;
 
-    public float frameCount = 0;
+    private float frameCount = 0;
 
 
     public Renderer(GL_Window window) {

@@ -1,12 +1,12 @@
 import Models.EntityModel;
 import Models.EntityModelLoader;
 
-public class EntityTest {
+class EntityTest {
     public static void main(String[] args) {
         new EntityTest().runTest();
     }
 
-    public void runTest() {
+    private void runTest() {
         EntityModel model = new EntityModelLoader().loadState("block/stone");
         System.out.println(model);
     }

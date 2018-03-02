@@ -3,7 +3,7 @@ package Entities;
 import GL_Math.Vector3;
 
 public class FallingBlock extends Block {
-    public Block blockClass;
+    private Block blockClass;
 
     public FallingBlock(Block blockClass) {
         super(blockClass.getPos(), blockClass.type, blockClass.chunk);

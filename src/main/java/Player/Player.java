@@ -39,7 +39,7 @@ public class Player extends Entity implements Collidable{
 
     private float lastX;
 
-    Player(Renderer renderer, Vector3 pos) {
+    private Player(Renderer renderer, Vector3 pos) {
         super(pos);
         this.renderer = renderer;
 
@@ -111,9 +111,6 @@ public class Player extends Entity implements Collidable{
     }
 
     private void collision() {
-        boolean xLocked = false;
-        boolean yLocked = false;
-        boolean zLocked = false;
 
         Vector3 corr = Vector3.zero();
 
@@ -121,23 +118,20 @@ public class Player extends Entity implements Collidable{
             for (int i = -1; i <= 1; i++) {
                 for (int j = -1; j <= 1; j++) {
                     CollisionResult collisionResult = collideWithBlockAtDiff(i,h,j);
-                    if (collisionResult.xCorr != 0 && !xLocked) {
+                    if (collisionResult.xCorr != 0) {
                         this.speed.x = 0;
                         corr.x = maxAbs(collisionResult.xCorr, corr.x);
-                        //xLocked = true;
                     }
-                    if (collisionResult.yCorr != 0 && !yLocked) {
+                    if (collisionResult.yCorr != 0) {
                         this.speed.y = 0;
                         corr.y = maxAbs(collisionResult.yCorr, corr.y);
                         //corr.y += collisionResult.yCorr;
-                        //yLocked = true;
                         if (collisionResult.yCorr > 0) onGround = true;
                     }
-                    if (collisionResult.zCorr != 0 && !zLocked) {
+                    if (collisionResult.zCorr != 0) {
                         this.speed.z = 0;
                         corr.z = maxAbs(collisionResult.zCorr, corr.z);
                         //corr.z = collisionResult.zCorr;
-                        //zLocked = true;
                     }
                 }
             }
@@ -146,7 +140,7 @@ public class Player extends Entity implements Collidable{
         this.pos.add(corr);
     }
 
-    float maxAbs(float a, float b) {
+    private float maxAbs(float a, float b) {
         if (Math.abs(a) > Math.abs(b)) return a;
         return b;
     }

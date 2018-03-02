@@ -6,7 +6,7 @@ import GL_Math.Vector3;
 import World.Chunk;
 
 abstract public class GravityBlock extends Block{
-    public GravityBlock(Vector3 pos, Type type, Chunk chunk) {
+    GravityBlock(Vector3 pos, Type type, Chunk chunk) {
         super(pos, type, chunk);
     }
 

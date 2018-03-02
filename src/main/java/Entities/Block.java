@@ -56,7 +56,7 @@ abstract public class Block extends DrawableEntity implements Collidable {
         loadModel(new EntityModelLoader().loadState(modelName));
     }
 
-    protected void loadModel(EntityModel model) {
+    void loadModel(EntityModel model) {
         this.model = model;
         transparent = model.transparent;
     }
@@ -113,7 +113,7 @@ abstract public class Block extends DrawableEntity implements Collidable {
 
     }
 
-    public void destroy() { chunk.removeBlock(this);}
+    protected void destroy() { chunk.removeBlock(this);}
 
     public byte store() {
         return type.store_value;

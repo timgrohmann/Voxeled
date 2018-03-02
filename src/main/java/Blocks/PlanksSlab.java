@@ -3,7 +3,6 @@ package Blocks;
 import Entities.Block;
 import GL_Math.Vector3;
 import Player.Player;
-import Models.Vertex;
 import World.Chunk;
 
 public class PlanksSlab extends Block {

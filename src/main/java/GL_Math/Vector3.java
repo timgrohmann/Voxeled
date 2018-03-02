@@ -81,7 +81,7 @@ public class Vector3 {
         return copy.add(new Vector3(x,y,z));
     }
 
-    public Vector3 copy() {
+    private Vector3 copy() {
         return new Vector3(x,y,z);
     }
 

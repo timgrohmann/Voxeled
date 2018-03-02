@@ -3,7 +3,7 @@ package Models;
 public class Culling {
     public boolean top, bottom, left, right, back, front;
 
-    public Culling(boolean top, boolean bottom, boolean left, boolean right, boolean back, boolean front) {
+    private Culling(boolean top, boolean bottom, boolean left, boolean right, boolean back, boolean front) {
         this.top = top;
         this.bottom = bottom;
         this.left = left;

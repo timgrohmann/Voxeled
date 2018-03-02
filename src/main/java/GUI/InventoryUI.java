@@ -57,6 +57,11 @@ public class InventoryUI extends UIBasicTexturedComponent implements Interactabl
     }
 
     @Override
+    public void setHover(boolean hov) {
+
+    }
+
+    @Override
     public GUIRectangle getRect() {
         return new GUIRectangle(this.pos, this.size);
     }

@@ -60,10 +60,10 @@ public class Game_IO {
     void update() {
         if (!menuShown) {
             handleBlockInteraction(renderer.player);
-        } else if (mouseLeftJustPressed) {
-            Vector2 mousePos = renderer.getWindow().getMousePos();
-            renderer.guiDrawer.mouseControl.click(mousePos);
         }
+
+        Vector2 mousePos = renderer.getWindow().getMousePos();
+        renderer.guiDrawer.mouseControl.process(mousePos, mouseLeftJustPressed);
 
         mouseLeftJustPressed = false;
         mouseRightJustPressed = false;

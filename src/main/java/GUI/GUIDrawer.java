@@ -76,8 +76,8 @@ public class GUIDrawer {
         //itemBarFBO = new ItemBarFBO(renderer.getWindow());
         mouseControl = new GUIMouseControl(this);
         inventoryUI = new InventoryUI(new Vector2(0,0), 2, true,renderer.player.inventory, this);
-        closeButton = new GUIButton(new Vector2(0,0), 1.6f,"Spiel beenden?");
 
+        closeButton = new GUIHoverButton(new Vector2(0,0), 1.6f,"Spiel beenden?");
         closeButton.setExecuter(renderer.getWindow()::close);
 
         mouseControl.registerComponent(inventoryUI);

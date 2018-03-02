@@ -10,7 +10,7 @@ import Main_Package.Renderer;
 import Shader.GUITextured2DShaderProgram;
 import Shader.WorldShaderProgram;
 
-public class ItemBarBlock extends UIBasicTexturedComponent {
+class ItemBarBlock extends UIBasicTexturedComponent {
 
     private static Vector2 UV_ORIGIN = new Vector2(0,0);
     private static Vector2 UV_SIZE = new Vector2(256,256);

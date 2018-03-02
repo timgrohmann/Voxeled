@@ -9,15 +9,15 @@ import static org.lwjgl.opengl.GL13.*;
 import static org.lwjgl.opengl.GL30.*;
 import static org.lwjgl.opengl.GL32.glFramebufferTexture;
 
-public class ItemBarFBO {
-    int id;
+class ItemBarFBO {
+    private int id;
 
-    int textureID;
+    private int textureID;
 
-    GL_Window window;
+    private GL_Window window;
 
-    static int WIDTH = 256;
-    static int HEIGHT = 256;
+    private static int WIDTH = 256;
+    private static int HEIGHT = 256;
     private static float[] clearColor = new float[]{0,0,0,0};
 
     public ItemBarFBO(GL_Window window) {
