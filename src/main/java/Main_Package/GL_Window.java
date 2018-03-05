@@ -17,13 +17,16 @@ public class GL_Window {
     int height;
     int width;
 
+    int screenCoordinateHeight;
+    int screenCoordinateWidth;
+
     public final long identifier;
 
     private ArrayList<GLFWKeyCallbackI> callbacks;
 
     public GL_Window(int height, int width) {
-        this.height = height;
-        this.width = width;
+        this.screenCoordinateHeight = height;
+        this.screenCoordinateWidth = width;
 
         //glfwWindowHint(GLFW_DECORATED, GL_FALSE);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -35,6 +38,11 @@ public class GL_Window {
         if ( identifier == NULL )
             throw new RuntimeException("Failed to create the GLFW window");
 
+        int[] h = new int[1];
+        int[] w = new int[1];
+        glfwGetFramebufferSize(identifier,w,h);
+        this.height = h[0];
+        this.width = w[0];
 
         //Hides and grabs the cursor, providing virtual and unlimited cursor movement.
         glfwSetInputMode(identifier, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -42,7 +50,7 @@ public class GL_Window {
 
         // Center Window
         // Get the thread stack and push a new frame
-        try ( MemoryStack stack = stackPush() ) {
+        /*try ( MemoryStack stack = stackPush() ) {
             IntBuffer pWidth = stack.mallocInt(1); // int*
             IntBuffer pHeight = stack.mallocInt(1); // int*
 
@@ -58,7 +66,7 @@ public class GL_Window {
                     (videoMode.width() - pWidth.get(0)) / 2,
                     (videoMode.height() - pHeight.get(0)) / 2
             );
-        } // the stack frame is popped automatically
+        } // the stack frame is popped automatically*/
 
         callbacks = new ArrayList<>();
         registerMainKeyCallback();
@@ -78,8 +86,8 @@ public class GL_Window {
 
 
 
-    void setResizeCallBack(GLFWWindowSizeCallbackI cb) {
-        glfwSetWindowSizeCallback(identifier, cb);
+    void setResizeCallBack(GLFWFramebufferSizeCallbackI cb) {
+        glfwSetFramebufferSizeCallback(identifier, cb);
     }
 
     void setMouseMoveCallBack(GLFWCursorPosCallbackI cb) {
@@ -137,5 +145,13 @@ public class GL_Window {
 
     public int getWidth() {
         return width;
+    }
+
+    public int getScreenCoordinateHeight() {
+        return screenCoordinateHeight;
+    }
+
+    public int getScreenCoordinateWidth() {
+        return screenCoordinateWidth;
     }
 }

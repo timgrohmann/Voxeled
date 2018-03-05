@@ -19,8 +19,6 @@ import static org.lwjgl.opengl.GL30.GL_TEXTURE_2D_ARRAY;
 import static org.lwjgl.opengl.GL42.glTexStorage3D;
 
 public class BlockTextures {
-    private final String texPath;
-
     private int textureId = -1;
 
     private Texture[] textures;
@@ -29,7 +27,6 @@ public class BlockTextures {
 
 
     public BlockTextures(BlockRegistry registry) {
-        this.texPath = "src/main/resources/terrain.png";
 
         Block[] allBlocks = registry.allSingletons();
 

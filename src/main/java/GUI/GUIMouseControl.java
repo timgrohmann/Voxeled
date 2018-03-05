@@ -24,8 +24,8 @@ public class GUIMouseControl {
     }
 
     private void click(Vector2 mousePos) {
-        float width = guiDrawer.renderer.getWindow().getWidth();
-        float height = guiDrawer.renderer.getWindow().getHeight();
+        float width = guiDrawer.renderer.getWindow().getScreenCoordinateWidth();
+        float height = guiDrawer.renderer.getWindow().getScreenCoordinateHeight();
 
         Vector2 screenPos = new Vector2(mousePos.x / width * 2 - 1, -mousePos.y / height * 2 + 1);
         screenPos.x *= guiDrawer.renderer.getWindow().getAspectRatio();
@@ -36,8 +36,8 @@ public class GUIMouseControl {
     }
 
     private void hover(Vector2 mousePos) {
-        float width = guiDrawer.renderer.getWindow().getWidth();
-        float height = guiDrawer.renderer.getWindow().getHeight();
+        float width = guiDrawer.renderer.getWindow().getScreenCoordinateWidth();
+        float height = guiDrawer.renderer.getWindow().getScreenCoordinateHeight();
 
         Vector2 screenPos = new Vector2(mousePos.x / width * 2 - 1, -mousePos.y / height * 2 + 1);
         screenPos.x *= guiDrawer.renderer.getWindow().getAspectRatio();
