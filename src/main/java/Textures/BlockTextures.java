@@ -60,7 +60,7 @@ public class BlockTextures {
         TextureLoader[] textureLoaders = new TextureLoader[textures.length];
 
         for (int i = 0; i < textures.length; i++) {
-            TextureLoader loader = TextureLoader.load("textures/default/textures/" + textures[i].name + ".png");
+            TextureLoader loader = TextureLoader.load("/textures/" + textures[i].name + ".png");
 
             int texCount = loader.tHeight / TEXTURE_SIZE;
             textureLoaders[i] = loader;

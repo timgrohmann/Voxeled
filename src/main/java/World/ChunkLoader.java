@@ -1,5 +1,8 @@
 package World;
 
+import Main_Package.FileManager;
+
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -23,14 +26,9 @@ class ChunkLoader {
     }
 
     private Chunk readFromFile(World world) {
-        String fileName = "world/chunks/c_" + String.valueOf(xPos) + "_" + String.valueOf(yPos) + ".chunk";
-
-        try {
-            byte[] bytes = Files.readAllBytes(Paths.get(fileName));
-
-            return new Chunk(world, bytes, xPos, yPos);
-        }catch (Exception e) {
-            return null;
-        }
+        String fileName = "chunks/c_" + String.valueOf(xPos) + "_" + String.valueOf(yPos) + ".chunk";
+        byte[] bytes = FileManager.getFromFile(fileName);
+        if (bytes.length==0) return null;
+        return new Chunk(world, bytes, xPos, yPos);
     }
 }

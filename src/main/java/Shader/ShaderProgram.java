@@ -3,9 +3,12 @@ package Shader;
 import GL_Math.Matrix4;
 import GL_Math.Vector3;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import static java.lang.Character.getName;
 import static org.lwjgl.opengl.GL11.*;
@@ -17,8 +20,8 @@ abstract public class ShaderProgram {
     private String log;
 
     ShaderProgram(String shaderDir) throws Exception {
-        int vertex = compileShader("src/main/resources/shaders/" + shaderDir + "/vertex.shader", GL_VERTEX_SHADER);
-        int fragment = compileShader("src/main/resources/shaders/" + shaderDir + "/fragment.shader", GL_FRAGMENT_SHADER);
+        int vertex = compileShader("/shaders/" + shaderDir + "/vertex.shader", GL_VERTEX_SHADER);
+        int fragment = compileShader("/shaders/" + shaderDir + "/fragment.shader", GL_FRAGMENT_SHADER);
 
         //create the program
         program = glCreateProgram();
@@ -88,28 +91,15 @@ abstract public class ShaderProgram {
     }
 
     private String readShaderFile(String filePath) {
-        BufferedReader br = null;
-        StringBuilder all = new StringBuilder();
-
         try {
-            br = new BufferedReader(new FileReader(filePath));
-            String line;
-            while ((line = br.readLine()) != null) {
-                all.append(line).append("\n");
+            InputStream resource = getClass().getResourceAsStream(filePath);
+            try (BufferedReader buffer = new BufferedReader(new InputStreamReader(resource))) {
+                return buffer.lines().collect(Collectors.joining("\n"));
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (br != null) {
-                    br.close();
-                }
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+        } catch (Exception e) {
+            System.err.format("%s", e);
         }
-
-        return all.toString();
+        return null;
     }
 
     private int uniformLocation(String name) {

@@ -3,11 +3,15 @@ package World;
 import Buffers.BlockABO;
 import Entities.Block;
 import GL_Math.Vector3;
+import Main_Package.FileManager;
 import Models.CuboidFace;
 import Models.Vertex;
+import Player.Player;
 import Structures.Tree;
 
 import java.io.FileOutputStream;
+import java.net.URL;
+import java.nio.file.Paths;
 
 /**
  * Defines a 16x16 block area
@@ -385,7 +389,7 @@ public class Chunk {
      * Saves chunk's block's byte data to .chunk file in /world/chunks
      */
     void saveToFile() {
-        String fileName = "world/chunks/c_" + String.valueOf(xOff) + "_" + String.valueOf(zOff) + ".chunk";
+        String fileName = "chunks/c_" + String.valueOf(xOff) + "_" + String.valueOf(zOff) + ".chunk";
 
         byte[] data = new byte[blockCount()];
 
@@ -397,13 +401,7 @@ public class Chunk {
             data[i] = blocks[i].store();
         }
 
-        try{
-            FileOutputStream out = new FileOutputStream(fileName);
-            out.write(data);
-            out.close();
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        FileManager.writeToFile(data, fileName);
 
     }
 

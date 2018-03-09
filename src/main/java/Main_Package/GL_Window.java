@@ -47,6 +47,10 @@ public class GL_Window {
         //Hides and grabs the cursor, providing virtual and unlimited cursor movement.
         glfwSetInputMode(identifier, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+        glfwSetWindowSizeCallback(identifier, (id,x,y) -> {
+            this.screenCoordinateWidth = x;
+            this.screenCoordinateHeight = y;
+        });
 
         // Center Window
         // Get the thread stack and push a new frame

@@ -18,7 +18,7 @@ public class InventoryUI extends UIBasicTexturedComponent implements Interactabl
         super(pos, width, center, UV_ORIGIN, UV_SIZE);
         this.drawer = drawer;
         this.inventory = inventory;
-        this.textureDescriptor = new GUITextureDescriptor("textures/default/textures/gui/container/creative_inventory/tab_items.png", false);
+        this.textureDescriptor = new GUITextureDescriptor("/textures/gui/container/creative_inventory/tab_items.png", false);
     }
 
     public void render() {

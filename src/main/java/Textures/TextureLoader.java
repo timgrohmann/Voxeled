@@ -5,7 +5,9 @@ import de.matthiasmann.twl.utils.PNGDecoder;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.file.Paths;
 
 public class TextureLoader {
 
@@ -27,7 +29,7 @@ public class TextureLoader {
 
         // Open the PNG file as an InputStream
         try {// Link the PNG decoder to this stream
-            InputStream in = new FileInputStream(texPath);
+            InputStream in = TextureLoader.class.getResourceAsStream(texPath);
             PNGDecoder decoder = new PNGDecoder(in);
 
             // Get the width and height of the textureLoader
@@ -43,6 +45,9 @@ public class TextureLoader {
 
             in.close();
         } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }catch (Exception e) {
             e.printStackTrace();
             System.exit(-1);
         }

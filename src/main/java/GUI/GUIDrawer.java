@@ -41,8 +41,8 @@ public class GUIDrawer {
 
     private final Map<String, GUITexture> textureMap = new HashMap<>();
 
-    public static GUITextureDescriptor WIDGET_TEXTURE = new GUITextureDescriptor("textures/default/textures/gui/widgets.png", false);
-    public static GUITextureDescriptor TEXT_TEXTURE = new GUITextureDescriptor("src/main/resources/text.png", true);
+    public static GUITextureDescriptor WIDGET_TEXTURE = new GUITextureDescriptor("/textures/gui/widgets.png", false);
+    public static GUITextureDescriptor TEXT_TEXTURE = new GUITextureDescriptor("/text.png", true);
 
     public GUIMouseControl mouseControl;
 

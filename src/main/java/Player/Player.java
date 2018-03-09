@@ -2,10 +2,12 @@ package Player;
 
 import Entities.*;
 import GL_Math.Vector3;
+import Main_Package.FileManager;
 import Main_Package.Renderer;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -224,17 +226,16 @@ public class Player extends Entity implements Collidable{
     }
 
     public static Player fromFile(String playerName, Renderer renderer) {
-        String fileName = "world/" + playerName + ".player";
 
         try {
-            byte[] bytes = Files.readAllBytes(Paths.get(fileName));
+            byte[] bytes = FileManager.getFromFile(playerName + ".player");
             ByteBuffer buffer = ByteBuffer.wrap(bytes);
             float xPos = buffer.getFloat(0);
             float yPos = buffer.getFloat(4);
             float zPos = buffer.getFloat(8);
             System.out.format("Read pos: %.2f %.2f %.2f%n", xPos, yPos, zPos);
             return new Player(renderer, new Vector3(xPos,yPos,zPos));
-        } catch (IOException e) {
+        } catch (Exception e) {
             //e.printStackTrace();
             System.out.format("Info: Player file %s.player not found!%n",playerName);
             return new Player(renderer, new Vector3(0, 100, 0));
@@ -242,18 +243,19 @@ public class Player extends Entity implements Collidable{
     }
 
     public void saveToFile() {
-        String fileName = "world/0.player";
+        String fileName = "0.player";
 
         byte[] xPos = floatToByteArray(pos.x);
         byte[] yPos = floatToByteArray(pos.y);
         byte[] zPos = floatToByteArray(pos.z);
 
+        byte[] bs = new byte[xPos.length+yPos.length+zPos.length];
+        System.arraycopy(xPos,0,bs,0,xPos.length);
+        System.arraycopy(yPos,0,bs,xPos.length,yPos.length);
+        System.arraycopy(zPos,0,bs,xPos.length + yPos.length,zPos.length);
+
         try{
-            FileOutputStream out = new FileOutputStream(fileName);
-            out.write(xPos);
-            out.write(yPos);
-            out.write(zPos);
-            out.close();
+            FileManager.writeToFile(bs, fileName);
         }catch (Exception e) {
             e.printStackTrace();
         }

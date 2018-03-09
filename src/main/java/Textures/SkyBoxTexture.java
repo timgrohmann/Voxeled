@@ -22,7 +22,7 @@ public class SkyBoxTexture {
         glBindTexture(GL_TEXTURE_CUBE_MAP, this.id);
 
         for (int i = 0; i < 6; i++) {
-            TextureLoader loader = TextureLoader.load("src/main/resources/skybox/" + filnames[i]);
+            TextureLoader loader = TextureLoader.load("/skybox/" + filnames[i]);
             glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, loader.tWidth, loader.tHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, loader.buf);
         }
 
