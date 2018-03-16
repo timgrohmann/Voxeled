@@ -14,6 +14,11 @@ public class HitBox {
         this.linkedEntity = linkedEntity;
     }
 
+
+    /**
+     * Computes the minimal displacement necessary to stop two hitboxes from overlapping.
+     * @param otherHitBox The hitbox to be checked against.
+     */
     public CollisionResult checkCollision(HitBox otherHitBox) {
         if (otherHitBox == null) return CollisionResult.none;
 
@@ -79,7 +84,10 @@ public class HitBox {
     }
 
 
-    public Vector3[] getEdgeVertices() {
+    /**
+     * @return The vertices of the 12 lines surrounding the hitbox.
+     * */
+    Vector3[] getEdgeVertices() {
         Vector3 min = min();
         Vector3 max = max();
 
@@ -101,6 +109,12 @@ public class HitBox {
         };
     }
 
+
+    /**
+     * Checks if point lies within hitbox
+     * @param pos The point to check.
+     * @return True if point lies inside.
+     */
     public boolean doesContainPoint(Vector3 pos) {
         Vector3 min = min();
         Vector3 max = max();
