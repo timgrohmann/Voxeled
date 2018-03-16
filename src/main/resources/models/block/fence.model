@@ -1,0 +1,23 @@
+{
+  "parts": [
+    {
+      "name": "blocks/fence_post"
+    },
+    {
+      "if": "north=true",
+      "name": "fence_bar"
+    },
+    {
+      "if": "east=true",
+      "name": "fence_bar"
+    },
+    {
+      "if": "south=true",
+      "name": "fence_bar"
+    },
+    {
+      "if": "west=true",
+      "name": "fence_bar"
+    }
+  ]
+}

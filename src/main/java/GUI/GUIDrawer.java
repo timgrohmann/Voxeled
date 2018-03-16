@@ -1,6 +1,5 @@
 package GUI;
 
-import Buffers.BlockABO;
 import Buffers.GUILineABO;
 import Buffers.GUISelectionABO;
 import Buffers.Triangle2DABO;
@@ -9,43 +8,43 @@ import GL_Math.Matrix4;
 import GL_Math.Vector2;
 import GL_Math.Vector3;
 import Main_Package.Renderer;
-import Models.GUITexturedVertex;
 import Models.GUIVertex;
-import Models.Vertex;
 import Shader.GUI2DShaderProgram;
 import Shader.GUISelectionShaderProgram;
 import Shader.GUITextured2DShaderProgram;
 import Shader.WorldShaderProgram;
-import Textures.Texture;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class GUIDrawer {
-    private final Renderer renderer;
+    final Renderer renderer;
 
     private GUI2DShaderProgram gui2DShaderProgram;
     private GUISelectionShaderProgram selectionShaderProgram;
-    private GUITextured2DShaderProgram guiTextured2DShaderProgram;
+    GUITextured2DShaderProgram guiTextured2DShaderProgram;
     private WorldShaderProgram inventoryBlockShaderProgram;
 
     private GUILineABO arrayBuffer;
     private GUISelectionABO arrayBuffer3D;
-    private Triangle2DABO mainGuiBuffer;
-    private BlockABO inventroyBlockABO;
+    Triangle2DABO mainGuiBuffer;
 
     private ItemBar itemBar;
     private ItemBarSelector itemBarSelector;
+    private ItemBarBlock itemBarBlock;
+    private GUIButton closeButton;
+    private InventoryUI inventoryUI;
 
     public boolean menuShown = false;
+    public boolean inventoryShown = false;
 
     private Block highlightedBlock;
 
-    private final GUITexture guiTexture;
+    private final Map<String, GUITexture> textureMap = new HashMap<>();
 
-    private List<GUITexturedVertex> mainVertices = new ArrayList<>();
-    private List<GUITexturedVertex> textVertices = new ArrayList<>();
+    public static GUITextureDescriptor WIDGET_TEXTURE = new GUITextureDescriptor("/textures/gui/widgets.png", false);
+    public static GUITextureDescriptor TEXT_TEXTURE = new GUITextureDescriptor("/text.png", true);
+
+    public GUIMouseControl mouseControl;
 
     public GUIDrawer(Renderer renderer) {
         this.renderer = renderer;
@@ -58,8 +57,6 @@ public class GUIDrawer {
             e.printStackTrace();
         }
 
-        guiTexture = new GUITexture();
-        guiTexture.load();
         load();
     }
 
@@ -70,22 +67,36 @@ public class GUIDrawer {
         arrayBuffer3D = new GUISelectionABO(selectionShaderProgram);
 
         mainGuiBuffer = new Triangle2DABO(this.guiTextured2DShaderProgram);
-        inventroyBlockABO = new BlockABO(this.inventoryBlockShaderProgram);
+        //inventroyBlockABO = new BlockABO(this.inventoryBlockShaderProgram);
 
         itemBar = new ItemBar(new Vector2(0, -0.85f), 1.8f, true);
         itemBarSelector = new ItemBarSelector(new Vector2(-0.8f,-0.85f),0.2f,true);
+
+        itemBarBlock = new ItemBarBlock(0.2f, this);
+        //itemBarFBO = new ItemBarFBO(renderer.getWindow());
+        mouseControl = new GUIMouseControl(this);
+        inventoryUI = new InventoryUI(new Vector2(0,0), 2, true,renderer.player.inventory, this);
+
+        closeButton = new GUIHoverButton(new Vector2(0,0), 1.6f,"Spiel beenden?");
+        closeButton.setExecuter(renderer.getWindow()::close);
+
+        mouseControl.registerComponent(inventoryUI);
+        mouseControl.registerComponent(closeButton);
     }
 
     public void renderStaticGUI(Matrix4 matrix4) {
-        if (menuShown) {
-            GUIButton closeButton = new GUIButton(new Vector2(0,0), 1.6f,"Spiel beenden?");
-            renderComponent(closeButton);
-        } else {
-            renderCrosshair(matrix4);
-            renderComponent(itemBar);
-            itemBarSelector.setScrollState(renderer.gameIO.selectedSlot);
-            renderComponent(itemBarSelector);
-        }
+
+        boolean itemBarShown = true;
+
+        closeButton.setVisible(menuShown);
+        renderButton(closeButton);
+
+        if (!menuShown) renderCrosshair(matrix4);
+
+
+        inventoryUI.setVisible(inventoryShown);
+        render(inventoryUI);
+        inventoryUI.render();
 
         //Debug info
         GUIText chunkText = new GUIText(String.format("Chunks loaded: %d", renderer.world.chunks.size()),
@@ -93,60 +104,54 @@ public class GUIDrawer {
         GUIText coordText = new GUIText(String.format("x: %.2f y: %.2f, z: %.2f", renderer.player.getPos().x, renderer.player.getPos().y, renderer.player.getPos().z),
                 new Vector2(-renderer.getWindow().getAspectRatio() + 0.01f, 0.99f - 0.05f),0.04f, false);
 
-        renderComponent(chunkText);
-        renderComponent(coordText);
+        render(chunkText);
+        render(coordText);
 
 
-        //Actual render pass
+        //Render inventory bar
+        itemBar.setVisible(itemBarShown);
+        render(itemBar);
 
+        //Render blocks in inventory
+        if (itemBarShown) {
+            itemBarSelector.setScrollState(renderer.player.selectedSlot);
+            render(itemBarSelector);
+            itemBarBlock.setUp();
+
+            Block[] inv = renderer.player.inventory.barBlocks;
+            for (int i = 0; i < 9; i++) {
+                Block invBlock = inv[i];
+                if (invBlock == null) continue;
+                itemBarBlock.render(invBlock, itemBar.positionForSlot(i));
+            }
+        }
+
+        Renderer.setFaceCulling(true);
+        Renderer.setDepthTest(true);
+    }
+
+    private void mainRenderSetup() {
+        Renderer.setDepthTest(false);
+        Renderer.setFaceCulling(false);
         guiTextured2DShaderProgram.use();
         guiTextured2DShaderProgram.setUniformFloat("aspect", renderer.getWindow().getAspectRatio());
         guiTextured2DShaderProgram.setUniformInt("texture_diffuse", 1);
+    }
 
-        renderer.setDepthTest(false);
+    private void render(UIComponent component) {
+        if (!component.isVisible()) return;
 
-        mainGuiBuffer.load(mainVertices);
-        guiTexture.activateMainTextures();
+        mainRenderSetup();
+        GUITexture tex = textureMap.computeIfAbsent(component.textureDescriptor.texturePath,
+                k -> new GUITexture(1).load(component.textureDescriptor.texturePath, component.textureDescriptor.interpolate));
+        tex.bind();
+        mainGuiBuffer.load(component.getVertices());
         mainGuiBuffer.render();
-
-        mainGuiBuffer.load(textVertices);
-        guiTexture.activateTextTextures();
-        mainGuiBuffer.render();
-
-        mainVertices.clear();
-        textVertices.clear();
-
-        //Render blocks in inventory
-        inventoryBlockShaderProgram.use();
-        inventoryBlockShaderProgram.setUniformMatrix("mat", Matrix4.guiMatrix(1,renderer.getWindow().getAspectRatio()));
-        inventoryBlockShaderProgram.setUniformVector("light_dir", new Vector3(0,-5,-5));
-
-        Block[] inventory = renderer.player.inventory();
-        ArrayList<Vertex> displayBlockVertices = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            if (inventory[i] == null) continue;
-            displayBlockVertices.addAll(Arrays.asList(blockDisplayQuad(i,inventory[i])));
-        }
-
-        Vertex[] vertices1 = new Vertex[displayBlockVertices.size()];
-        vertices1 = displayBlockVertices.toArray(vertices1);
-        inventroyBlockABO.load(vertices1);
-        inventroyBlockABO.render();
-
-        renderer.setDepthTest(true);
     }
 
-    private void renderComponent(UIBasicTexturedComponent component) {
-        mainVertices.addAll(component.getVerticesList());
-    }
-
-    private void renderComponent(GUIButton button) {
-        mainVertices.addAll(button.getVerticesList());
-        textVertices.addAll(button.getText().getVerticesList());
-    }
-
-    private void renderComponent(GUIText text) {
-        textVertices.addAll(text.getVerticesList());
+    private void renderButton(GUIButton component) {
+        render(component);
+        render(component.getText());
     }
 
     private void renderCrosshair(Matrix4 matrix4) {
@@ -175,7 +180,7 @@ public class GUIDrawer {
     public void render3D(Matrix4 mat) {
         if (highlightedBlock == null) return;
 
-        Vertex[] vertices = highlightedBlock.getEdgeVertices();
+        Vector3[] vertices = highlightedBlock.getEdgeVertices();
         if (vertices == null || vertices.length == 0) return;
         selectionShaderProgram.use();
 
@@ -184,39 +189,5 @@ public class GUIDrawer {
         arrayBuffer3D.load(vertices);
         selectionShaderProgram.setUniformMatrix("matGUI", mat);
         arrayBuffer3D.render();
-    }
-
-    private static Vertex[] blockDisplayQuad(int slot, Block block) {
-        Texture topTexture = block.getTopTexture();
-        Texture sideTexture = block.getSideTexture();
-        float h = 0.10f;
-        float xMid = -0.8f + 0.2f * slot;
-        float yMid = -0.85f;
-        float inCircleRad = 0.866f * h / 2;
-
-        //top side
-        Vertex top = new Vertex(new Vector3(xMid,yMid + h / 2,0), 0, 0, topTexture);
-        Vertex right = new Vertex(new Vector3(xMid + inCircleRad,yMid + h / 4,0), 0, 1, topTexture);
-        Vertex bottom = new Vertex(new Vector3(xMid,yMid,0), 1, 1, topTexture);
-        Vertex left = new Vertex(new Vector3(xMid - inCircleRad,yMid + h / 4,0), 1, 0, topTexture);
-
-
-        //right side
-        Vertex rightTop = new Vertex(new Vector3(xMid + inCircleRad,yMid + h / 4,0), 0, 0, sideTexture);
-        Vertex rightBottom = new Vertex(new Vector3(xMid + inCircleRad,yMid - h / 4,0), 0, 1, sideTexture);
-        Vertex rightMidBottom = new Vertex(new Vector3(xMid,yMid - h / 2,0), 1, 1, sideTexture);
-        Vertex rightCenter = new Vertex(new Vector3(xMid,yMid,0), 1, 0, sideTexture);
-
-        //left side
-        Vertex leftTop = new Vertex(new Vector3(xMid - inCircleRad,yMid + h / 4,0), 1, 0, sideTexture);
-        Vertex leftBottom = new Vertex(new Vector3(xMid - inCircleRad,yMid - h / 4,0), 1, 1, sideTexture);
-        Vertex leftMidBottom = new Vertex(new Vector3(xMid,yMid - h / 2,0), 0, 1, sideTexture);
-        Vertex leftCenter = new Vertex(new Vector3(xMid,yMid,0), 0, 0, sideTexture);
-
-        return new Vertex[]{
-                top,right,bottom,bottom,left,top,
-                rightTop,rightBottom,rightMidBottom,rightMidBottom,rightCenter,rightTop,
-                leftTop,leftBottom,leftMidBottom,leftMidBottom,leftCenter,leftTop
-        };
     }
 }

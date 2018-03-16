@@ -11,6 +11,6 @@ public class Grass extends Block{
 
     @Override
     public void registerTextures() {
-        loadTextures("grass_top", "grass_side", "dirt", false, true);
+        loadModel("blocks/grass");
     }
 }

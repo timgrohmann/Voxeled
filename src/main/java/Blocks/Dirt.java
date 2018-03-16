@@ -11,6 +11,6 @@ public class Dirt extends Block {
 
     @Override
     public void registerTextures() {
-        loadTextures("dirt");
+        loadModel("blocks/dirt");
     }
 }

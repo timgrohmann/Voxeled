@@ -1,12 +1,12 @@
 package Textures;
 
 import Entities.Block;
-import Main_Package.Log;
+import Models.CuboidFace;
+import Models.CuboidModel;
+import Models.EntityModel;
 import Registry.BlockRegistry;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.CallbackI;
 
 import java.util.ArrayList;
 
@@ -19,17 +19,14 @@ import static org.lwjgl.opengl.GL30.GL_TEXTURE_2D_ARRAY;
 import static org.lwjgl.opengl.GL42.glTexStorage3D;
 
 public class BlockTextures {
-    private final String texPath;
-
     private int textureId = -1;
 
-    public Texture[] textures;
+    private Texture[] textures;
 
     private int TEXTURE_SIZE = 16;
 
 
     public BlockTextures(BlockRegistry registry) {
-        this.texPath = "src/main/resources/terrain.png";
 
         Block[] allBlocks = registry.allSingletons();
 
@@ -37,9 +34,14 @@ public class BlockTextures {
 
         for (Block block: allBlocks) {
             block.registerTextures();
-            if (block.getTopTexture() != null && !textures.contains(block.getTopTexture())) textures.add(block.getTopTexture());
-            if (block.getSideTexture() != null && !textures.contains(block.getSideTexture())) textures.add(block.getSideTexture());
-            if (block.getBottomTexture() != null && !textures.contains(block.getBottomTexture())) textures.add(block.getBottomTexture());
+            EntityModel model = block.model;
+            if (model == null) continue;
+            for (CuboidModel cuboidModel: model.getCuboidModels()) {
+                for (CuboidFace cuboidFace: cuboidModel.getFaces()) {
+                    Texture t = cuboidFace.getTexture();
+                    if (!textures.contains(t)) textures.add(t);
+                }
+            }
         }
 
         this.textures = new Texture[textures.size()];
@@ -49,23 +51,37 @@ public class BlockTextures {
     public void load() {
         if (textureId == -1) textureId = GL11.glGenTextures();
 
-        TextureLoader texture = TextureLoader.load(texPath);
-
-
 
         GL13.glActiveTexture(GL_TEXTURE0);
         GL11.glBindTexture(GL_TEXTURE_2D_ARRAY, textureId);
 
 
-        glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, TEXTURE_SIZE, TEXTURE_SIZE, textures.length);
-
-
+        int layerCount = 0;
+        TextureLoader[] textureLoaders = new TextureLoader[textures.length];
 
         for (int i = 0; i < textures.length; i++) {
-            TextureLoader loader = TextureLoader.load("textures/PureBDcraft  16x MC112/assets/minecraft/textures/blocks/" + textures[i].name + ".png");
-            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, i, TEXTURE_SIZE, TEXTURE_SIZE, 1, GL_RGBA, GL_UNSIGNED_BYTE, loader.buf);
+            TextureLoader loader = TextureLoader.load("/textures/" + textures[i].name + ".png");
 
-            textures[i].layer = i;
+            int texCount = loader.tHeight / TEXTURE_SIZE;
+            textureLoaders[i] = loader;
+            layerCount += texCount;
+        }
+
+        glTexStorage3D(GL_TEXTURE_2D_ARRAY, 1, GL_RGBA8, TEXTURE_SIZE, TEXTURE_SIZE, layerCount);
+
+        int currentLayer = 0;
+
+        for (int i = 0; i < textures.length; i++) {
+            TextureLoader loader = textureLoaders[i];
+
+            int texCount = loader.tHeight / TEXTURE_SIZE;
+
+            glTexSubImage3D(GL_TEXTURE_2D_ARRAY, 0, 0, 0, currentLayer, TEXTURE_SIZE, TEXTURE_SIZE, texCount, GL_RGBA, GL_UNSIGNED_BYTE, loader.buf);
+
+            textures[i].setLayer(currentLayer);
+            textures[i].setLayerCount(texCount);
+
+            currentLayer += texCount;
         }
 
         glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

@@ -3,7 +3,7 @@ package Main_Package;
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
 import static org.lwjgl.opengl.GL11.glGetError;
 
-public class Log {
+class Log {
     public static void logGLError(){
         int error = glGetError();
         while (error != GL_NO_ERROR) {

@@ -1,0 +1,30 @@
+{
+  "textures" : {
+    "post": "blocks/planks_oak",
+    "crossbar": "blocks/planks_oak"
+  },
+  "elements": [
+    {
+      "__comment": "stick-north-1",
+      "from": [7,8,10],
+      "to": [9,10,16],
+      "faces": {
+        "down": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar"},
+        "up": { "uv": [ 6, 0, 8, 6 ], "rotation": 2, "texture": "#crossbar"},
+        "west": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar" },
+        "east": { "uv": [ 6, 0, 8, 6 ], "rotation": 1, "texture": "#crossbar" }
+      }
+    },
+    {
+      "__comment": "stick-north-2",
+      "from": [7,12,10],
+      "to": [9,14,16],
+      "faces": {
+        "down": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar"},
+        "up": { "uv": [ 6, 0, 8, 6 ], "rotation": 2, "texture": "#crossbar"},
+        "west": { "uv": [ 6, 0, 8, 6 ], "rotation": -1, "texture": "#crossbar" },
+        "east": { "uv": [ 6, 0, 8, 6 ], "rotation": 1, "texture": "#crossbar" }
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "parts": [
+    {
+      "if": {"half": "bottom"},
+      "name": "block/planks_slab"
+    },
+    {
+      "if": {"half": "top"},
+      "name": "block/planks_slab_top"
+    }
+  ]
+
+}

@@ -12,11 +12,32 @@ public class Water extends Block {
 
     @Override
     public void registerTextures() {
-        loadTextures("water_still", true, false);
+        loadModel("blocks/water");
     }
 
     @Override
     public HitBox getHitbox() {
         return null;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+
+        if (chunk.world.getBlockForCoordinates(pos.added(new Vector3(1,0,0))) == null) {
+            chunk.world.setBlockForCoordinates(Type.WATER, pos.added(new Vector3(1,0,0)));
+        }
+        if (chunk.world.getBlockForCoordinates(pos.added(new Vector3(-1,0,0))) == null) {
+            chunk.world.setBlockForCoordinates(Type.WATER, pos.added(new Vector3(-1,0,0)));
+        }
+        if (chunk.world.getBlockForCoordinates(pos.added(new Vector3(0,0,1))) == null) {
+            chunk.world.setBlockForCoordinates(Type.WATER, pos.added(new Vector3(0,0,1)));
+        }
+        if (chunk.world.getBlockForCoordinates(pos.added(new Vector3(0,0,-1))) == null) {
+            chunk.world.setBlockForCoordinates(Type.WATER, pos.added(new Vector3(0,0,-1)));
+        }
+        if (chunk.world.getBlockForCoordinates(pos.added(new Vector3(0,-1,0))) == null) {
+            chunk.world.setBlockForCoordinates(Type.WATER, pos.added(new Vector3(0,-1,0)));
+        }
     }
 }

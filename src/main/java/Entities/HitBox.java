@@ -3,20 +3,22 @@ package Entities;
 import GL_Math.Vector3;
 
 public class HitBox {
-    Vector3 size;
-    Vector3 centerOffset;
-    Entity linkedEntity;
+    private Vector3 minCorner;
+    private Vector3 maxCorner;
+    private Entity linkedEntity;
 
-    public HitBox(Vector3 size, Entity linkedEntity) {
-        this(size,linkedEntity,Vector3.zero());
-    }
 
-    public HitBox(Vector3 size, Entity linkedEntity, Vector3 centerOffset) {
-        this.size = size;
+    public HitBox(Vector3 minCorner, Vector3 maxCorner, Entity linkedEntity) {
+        this.minCorner = minCorner;
+        this.maxCorner = maxCorner;
         this.linkedEntity = linkedEntity;
-        this.centerOffset = centerOffset;
     }
 
+
+    /**
+     * Computes the minimal displacement necessary to stop two hitboxes from overlapping.
+     * @param otherHitBox The hitbox to be checked against.
+     */
     public CollisionResult checkCollision(HitBox otherHitBox) {
         if (otherHitBox == null) return CollisionResult.none;
 
@@ -43,6 +45,7 @@ public class HitBox {
             float yCor = correctionForPosAndNegValues(penTop,penBottom);
             float zCor = correctionForPosAndNegValues(penFront,penBack);
 
+            if (yCor > 0f && yCor < 0.55f) return new CollisionResult(0,yCor * 0.4f,0);
 
             if (Math.abs(xCor) < Math.abs(yCor) && Math.abs(xCor) < Math.abs(zCor)) {
                 return new CollisionResult(xCor,0,0);
@@ -74,12 +77,49 @@ public class HitBox {
         }
     }
 
-    private Vector3 min() {
-        return linkedEntity.pos.added(centerOffset).added(size.multiplied(-0.5f));
+    public Vector3 min() { return linkedEntity.pos.added(minCorner);
     }
-    private Vector3 max() {
-        return linkedEntity.pos.added(centerOffset).added(size.multiplied(0.5f));
+    public Vector3 max() {
+        return linkedEntity.pos.added(maxCorner);
     }
 
 
+    /**
+     * @return The vertices of the 12 lines surrounding the hitbox.
+     * */
+    Vector3[] getEdgeVertices() {
+        Vector3 min = min();
+        Vector3 max = max();
+
+        return new Vector3[] {
+                new Vector3(min.x,min.y,min.z), new Vector3(min.x,max.y,min.z),
+                new Vector3(max.x,min.y,min.z), new Vector3(max.x,max.y,min.z),
+                new Vector3(max.x,min.y,max.z), new Vector3(max.x,max.y,max.z),
+                new Vector3(min.x,min.y,max.z), new Vector3(min.x,max.y,max.z),
+
+                new Vector3(min.x,min.y,min.z), new Vector3(max.x,min.y,min.z),
+                new Vector3(min.x,min.y,max.z), new Vector3(max.x,min.y,max.z),
+                new Vector3(min.x,max.y,min.z), new Vector3(max.x,max.y,min.z),
+                new Vector3(min.x,max.y,max.z), new Vector3(max.x,max.y,max.z),
+
+                new Vector3(min.x,min.y,min.z), new Vector3(min.x,min.y,max.z),
+                new Vector3(min.x,max.y,min.z), new Vector3(min.x,max.y,max.z),
+                new Vector3(max.x,min.y,min.z), new Vector3(max.x,min.y,max.z),
+                new Vector3(max.x,max.y,min.z), new Vector3(max.x,max.y,max.z),
+        };
+    }
+
+
+    /**
+     * Checks if point lies within hitbox
+     * @param pos The point to check.
+     * @return True if point lies inside.
+     */
+    public boolean doesContainPoint(Vector3 pos) {
+        Vector3 min = min();
+        Vector3 max = max();
+
+        return pos.x > min.x && pos.y > min.y && pos.z > min.z &&
+                pos.x < max.x && pos.y < max.y && pos.z < max.z;
+    }
 }

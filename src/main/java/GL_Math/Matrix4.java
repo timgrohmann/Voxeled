@@ -103,6 +103,15 @@ public class Matrix4 {
         });
     }
 
+    public static Matrix4 scaleMatrix(float x, float y, float z) {
+        return new Matrix4(new float[]{
+                x,0,0,0,
+                0,y,0,0,
+                0,0,z,0,
+                0,0,0,1
+        });
+    }
+
     public static Matrix4 guiMatrix(float scal, float aspect) {
         return new Matrix4(new float[]{
                 scal / aspect,0,0,0,

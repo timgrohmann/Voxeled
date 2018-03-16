@@ -2,20 +2,23 @@ package GUI;
 
 import GL_Math.Vector2;
 import Models.GUITexturedVertex;
-import org.lwjgl.system.CallbackI;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-abstract public class UIComponent {
-    protected final Vector2 pos;
-    protected final Vector2 size;
-    protected GUITexturedVertex[] vertices;
+abstract class UIComponent {
+    final Vector2 pos;
+    final Vector2 size;
+    GUITexturedVertex[] vertices;
+
+    private boolean visible = true;
 
     private static float TEXTURE_SIZE = 256;
 
-    public UIComponent(Vector2 pos, Vector2 size, boolean centered) {
+    public GUITextureDescriptor textureDescriptor;
+
+
+    UIComponent(Vector2 pos, Vector2 size, boolean centered) {
         this.pos = pos;
         this.size = size;
 
@@ -27,7 +30,7 @@ abstract public class UIComponent {
 
     abstract void generateVertices();
 
-    protected Vector2 centerPos() {
+    Vector2 centerPos() {
         return new Vector2(pos.x + size.x / 2, pos.y - size.y / 2);
     }
 
@@ -39,6 +42,14 @@ abstract public class UIComponent {
     List<GUITexturedVertex> getVerticesList() {
         if (vertices == null || vertices.length == 0) generateVertices();
         return Arrays.asList(vertices);
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(boolean visible) {
+        this.visible = visible;
     }
 
     static GUITexturedVertex[] texQuad(float minX, float minY, float minU, float minV,

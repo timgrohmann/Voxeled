@@ -1,0 +1,8 @@
+{
+  "parts": [
+    {
+      "name": "block/leaves"
+    }
+  ],
+  "transparent": true
+}

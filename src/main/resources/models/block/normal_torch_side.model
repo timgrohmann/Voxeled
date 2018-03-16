@@ -1,0 +1,6 @@
+{
+  "parent": "block/torch_side",
+  "textures": {
+    "torch": "blocks/torch_on"
+  }
+}

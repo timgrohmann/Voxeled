@@ -1,0 +1,16 @@
+{
+  "textures": {
+    "particle": "#main",
+    "main": "blocks/sapling_oak"
+  },
+  "elements": [
+    {
+      "from": [ 0, 0, 8 ],
+      "to": [ 16,16,8 ],
+      "faces": {
+        "north": {"texture": "#main" },
+        "south": {"texture": "#main" }
+      }
+    }
+  ]
+}

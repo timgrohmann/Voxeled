@@ -4,8 +4,8 @@ import Entities.Entity;
 import GL_Math.Matrix4;
 import GL_Math.Vector3;
 import GUI.GUIDrawer;
+import Player.Player;
 import Registry.BlockRegistry;
-import Shader.WaterShaderProgram;
 import Shader.WorldShaderProgram;
 import World.World;
 import org.lwjgl.opengl.GL;
@@ -27,22 +27,17 @@ public class Renderer {
     public final World world;
 
     public WorldShaderProgram worldShader;
-    public WaterShaderProgram waterShader;
-    public final Game_IO gameIO;
+    private final Game_IO gameIO;
     public final Camera camera;
     public final BlockRegistry registry;
     GUIDrawer guiDrawer;
     public Player player;
     private SkyBox skyBox;
 
-    private int matLocation;
-
     private final Matrix4 mat;
     private Matrix4 perspectiveMatrix;
 
-    private float a = 0;
-
-    private int chunkCoolDown = 0;
+    private float frameCount = 0;
 
 
     public Renderer(GL_Window window) {
@@ -82,7 +77,7 @@ public class Renderer {
         glEnable(GL_DEPTH_TEST);
 
         glEnable(GL_LINE_SMOOTH);
-
+        glEnable(GL_CULL_FACE);
 
         //Enable alpha blending
         glEnable(GL_BLEND);
@@ -95,7 +90,6 @@ public class Renderer {
 
         try {
             worldShader =  new WorldShaderProgram();
-            waterShader = new WaterShaderProgram();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,10 +104,8 @@ public class Renderer {
         world.loadTexture();
 
 
-        Vector3 lightDirection = new Vector3(2,100,1);
+        Vector3 lightDirection = new Vector3(2,5,1);
         worldShader.setUniformVector("light_dir", lightDirection);
-
-        matLocation = worldShader.uniformLocation("mat");
 
 
 
@@ -145,6 +137,10 @@ public class Renderer {
     }
 
     private void render() {
+        worldShader.use();
+        worldShader.setUniformInt("animationFrame", (int) frameCount);
+
+
         mat.reset();
 
         mat.apply(camera.cameraMatrix());
@@ -152,6 +148,7 @@ public class Renderer {
 
         world.render(mat);
         world.renderWater(mat);
+        world.renderEntities(mat);
         skyBox.render(mat, player.getPos());
 
         guiDrawer.render3D(mat);
@@ -161,17 +158,28 @@ public class Renderer {
         guiDrawer.renderStaticGUI(mat);
 
         Log.logGLError();
+
+
+        frameCount += 0.1;
     }
 
     public GL_Window getWindow() {
         return window;
     }
 
-    public void setDepthTest(boolean enabled) {
+    public static void setDepthTest(boolean enabled) {
         if (enabled) {
             glEnable(GL_DEPTH_TEST);
         } else {
             glDisable(GL_DEPTH_TEST);
+        }
+    }
+
+    public static void setFaceCulling(boolean enabled) {
+        if (enabled) {
+            glEnable(GL_CULL_FACE);
+        } else {
+            glDisable(GL_CULL_FACE);
         }
     }
 

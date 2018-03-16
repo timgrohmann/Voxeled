@@ -1,16 +1,24 @@
 package World;
 
+import Buffers.BlockABO;
 import Entities.Block;
+import Entities.DrawableEntity;
 import GL_Math.Matrix4;
 import GL_Math.Vector3;
+import Models.Vertex;
 import Textures.BlockTextures;
 import Main_Package.Renderer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class World {
     public final ArrayList<Chunk> chunks;
+
+    public final List<DrawableEntity> entities;
+    public BlockABO entityABO;
 
     final double seed;
 
@@ -36,10 +44,12 @@ public class World {
         loaders = new ArrayList<ChunkLoader>();
         generalPurposeRandom = new Random((long) (seed * 100));
         blockTextures = new BlockTextures(renderer.registry);
+        entities = new ArrayList<>();
     }
 
     public void loadTexture() {
         blockTextures.load();
+        entityABO = new BlockABO(renderer.worldShader);
     }
 
     /**
@@ -81,6 +91,7 @@ public class World {
      * @param mat transformation matrix to use
      */
     public void render(Matrix4 mat){
+        Renderer.setFaceCulling(true);
         renderer.worldShader.use();
         renderer.worldShader.setUniformVector("light_dir", renderer.camera.getLightPos());
         renderer.worldShader.setUniformMatrix("mat",mat);
@@ -97,12 +108,29 @@ public class World {
      * @param mat transformation matrix to use
      */
     public void renderWater(Matrix4 mat) {
-        renderer.waterShader.use();
-        renderer.waterShader.setUniformVector("light_dir", renderer.camera.getLightPos());
-        renderer.waterShader.setUniformMatrix("mat",mat);
+        Renderer.setFaceCulling(false);
+        renderer.worldShader.use();
+        renderer.worldShader.setUniformVector("light_dir", renderer.camera.getLightPos());
+        renderer.worldShader.setUniformMatrix("mat",mat);
         for (Chunk chunk: chunks){
             chunk.renderWater();
         }
+    }
+
+    public void renderEntities(Matrix4 mat) {
+        renderer.worldShader.use();
+        renderer.worldShader.setUniformVector("light_dir", renderer.camera.getLightPos());
+        renderer.worldShader.setUniformMatrix("mat",mat);
+        blockTextures.activateTextures();
+
+        List<Vertex> vertices = new ArrayList<>();
+        for (DrawableEntity entity: entities) {
+            vertices.addAll(Arrays.asList(entity.getVertices()));
+        }
+        Vertex[] verticesArray = new Vertex[vertices.size()];
+        verticesArray = vertices.toArray(verticesArray);
+        entityABO.load(verticesArray);
+        entityABO.render();
     }
 
     /**
@@ -112,7 +140,7 @@ public class World {
      * @param y y position
      * @param z z position
      */
-    public void setBlockForCoordinates(Block.Type type, int x, int y, int z) {
+    public Block setBlockForCoordinates(Block.Type type, int x, int y, int z) {
         int inChunkX = Math.floorMod(x, Chunk.chunkSize);
         int inChunkZ = Math.floorMod(z, Chunk.chunkSize);
 
@@ -127,17 +155,57 @@ public class World {
         }
 
         if (chunk == null) {
-            return;
+            return null;
         }
 
         Block block = type.createInstance(new Vector3(x,y,z), chunk);
+        if (block == null) return null;
         chunk.setBlockAt(block, inChunkX, y, inChunkZ);
 
+        //Update neighbours
+        block.shouldUpdate = true;
+        updateBlocksAround(x,y,z);
+
+        return block;
+    }
+
+    public Block setBlockForCoordinates(Block.Type type, Vector3 pos) {
+        int x = (int) Math.floor(pos.x);
+        int y = (int) Math.floor(pos.y);
+        int z = (int) Math.floor(pos.z);
+
+        return setBlockForCoordinates(type,x,y,z);
+    }
+
+    public void updateBlocksAround(Vector3 pos) {
+        int x = (int) Math.floor(pos.x);
+        int y = (int) Math.floor(pos.y);
+        int z = (int) Math.floor(pos.z);
+
+        updateBlocksAround(x,y,z);
+    }
+
+    private void updateBlocksAround(int x, int y, int z) {
+        setShouldUpdateBlockAt(x,y-1,z);
+        setShouldUpdateBlockAt(x,y+1,z);
+        setShouldUpdateBlockAt(x-1,y,z);
+        setShouldUpdateBlockAt(x+1,y,z);
+        setShouldUpdateBlockAt(x,y,z-1);
+        setShouldUpdateBlockAt(x,y,z+1);
+    }
+
+    private void setShouldUpdateBlockAt(int x, int y, int z) {
+        Block b = getBlockForCoordinates(x,y,z);
+        if (b != null) {
+            b.shouldUpdate = true;
+            b.chunk.shouldUpdate = true;
+        }
     }
 
 
     /**
-     * Get block at position.
+     * Get block at position. <br />
+     * (Overload for <code>Block getBlockForCoordinates(int, int, int)</code>)
      * @param pos Components will be rounded to integer values.
      * @return The block found.
      */
@@ -146,6 +214,14 @@ public class World {
         int y = (int) Math.floor(pos.y);
         int z = (int) Math.floor(pos.z);
 
+        return getBlockForCoordinates(x,y,z);
+    }
+
+    /**
+     * Get block at integer position.
+     * @return The block found.
+     */
+    private Block getBlockForCoordinates(int x, int y, int z) {
         if (y > Chunk.chunkHeight - 1 || y < 0) return null;
 
         int inChunkX = Math.floorMod(x, Chunk.chunkSize);
@@ -266,13 +342,16 @@ public class World {
      * <b>Updates whole world</b>
      */
     public void tick() {
-        this.addNearChunksToLoadList(renderer.camera.getPosition(), 5);
-        this.unloadChunksOutsideOf(renderer.camera.getPosition(),7);
+        this.addNearChunksToLoadList(renderer.player.getPos(), 3);
+        this.unloadChunksOutsideOf(renderer.player.getPos(),5);
 
         this.loadOneChunk();
 
-
         for (Chunk chunk: chunks) chunk.tick();
+
+        for (int i = entities.size() - 1; i >= 0; i--) {
+            entities.get(i).update();
+        }
 
         for (int i = chunks.size() - 1; i >= 0; i--) {
             if (chunks.get(i).willUnload) chunks.remove(i);

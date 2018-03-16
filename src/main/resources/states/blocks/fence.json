@@ -1,0 +1,34 @@
+{
+  "parts": [
+    {
+      "name": "block/fence_post"
+    },
+    {
+      "if": {
+        "north": "true"
+      },
+      "name": "block/fence_bar"
+    },
+    {
+      "if": {
+        "east": "true"
+      },
+      "name": "block/fence_bar",
+      "rotation": -1
+    },
+    {
+      "if": {
+        "south": "true"
+      },
+      "name": "block/fence_bar_alt",
+      "rotation": 2
+    },
+    {
+      "if": {
+        "west": "true"
+      },
+      "name": "block/fence_bar_alt",
+      "rotation": 1
+    }
+  ]
+}

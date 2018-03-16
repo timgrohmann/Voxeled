@@ -1,8 +1,6 @@
 package Registry;
 
 import Entities.Block;
-import Textures.Texture;
-import org.lwjgl.system.CallbackI;
 
 import java.util.HashMap;
 import java.util.Map;

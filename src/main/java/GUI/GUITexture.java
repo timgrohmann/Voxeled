@@ -5,54 +5,37 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE1;
-import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL13.*;
 
-class GUITexture {
-    private int guiTextureId = -1;
-    private int textTextureId = -1;
+public class GUITexture {
+    private int textureId = -1;
+    private int textureComponent = -1;
 
-    public GUITexture() {
-        this.guiTextureId = glGenTextures();
-        this.textTextureId = glGenTextures();
+    public GUITexture(int textureComponent) {
+        this.textureId = glGenTextures();
+        this.textureComponent = textureComponent;
     }
 
-    void load() {
-        TextureLoader textureLoader = TextureLoader.load("src/main/resources/gui.png");
+    public GUITexture load(String filePath, boolean interpolate) {
+        TextureLoader textureLoader = TextureLoader.load(filePath);
 
-        activateMainTextures();
+        bind();
 
         GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
 
         GL11.glTexImage2D(GL_TEXTURE_2D, 0, GL11.GL_RGBA, textureLoader.tWidth, textureLoader.tHeight, 0,
                 GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, textureLoader.buf);
 
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, interpolate ? GL_LINEAR : GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, interpolate ? GL_LINEAR : GL_NEAREST);
 
         GL30.glGenerateMipmap(GL_TEXTURE_2D);
 
-
-        textureLoader = TextureLoader.load("src/main/resources/text.png");
-        activateTextTextures();
-        GL11.glPixelStorei(GL11.GL_UNPACK_ALIGNMENT, 1);
-
-        GL11.glTexImage2D(GL_TEXTURE_2D, 0, GL11.GL_RGBA, textureLoader.tWidth, textureLoader.tHeight, 0,
-                GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, textureLoader.buf);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        GL30.glGenerateMipmap(GL_TEXTURE_2D);
+        return this;
     }
 
-    void activateMainTextures() {
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, this.guiTextureId);
-    }
-
-    void activateTextTextures() {
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, this.textTextureId);
+    void bind() {
+        glActiveTexture(GL_TEXTURE0 + textureComponent);
+        glBindTexture(GL_TEXTURE_2D, this.textureId);
     }
 }

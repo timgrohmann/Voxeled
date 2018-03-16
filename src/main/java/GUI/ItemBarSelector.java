@@ -2,7 +2,7 @@ package GUI;
 
 import GL_Math.Vector2;
 
-public class ItemBarSelector extends UIBasicTexturedComponent{
+class ItemBarSelector extends UIBasicTexturedComponent{
     private static Vector2 UV_ORIGIN = new Vector2(0,22);
     private static Vector2 UV_SIZE = new Vector2(24,24);
 
@@ -11,6 +11,7 @@ public class ItemBarSelector extends UIBasicTexturedComponent{
     public ItemBarSelector(Vector2 pos, float width, boolean center) {
         super(pos, width, center, UV_ORIGIN, UV_SIZE);
         initialPos = pos.copy();
+        this.textureDescriptor = GUIDrawer.WIDGET_TEXTURE;
     }
 
     public void setScrollState(int slot /*0-8*/) {

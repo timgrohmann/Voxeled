@@ -1,6 +1,6 @@
 package Buffers;
 
-import Models.Vertex;
+import GL_Math.Vector3;
 import Shader.GUISelectionShaderProgram;
 import org.lwjgl.opengl.GL20;
 
@@ -13,7 +13,7 @@ public class GUISelectionABO extends ArrayBufferObject{
         loadAttributePointers();
     }
 
-    public void load(Vertex[] vertices) {
+    public void load(Vector3[] vertices) {
         float[] vals = new float[vertices.length * 3];
         vertexCount = vertices.length;
 

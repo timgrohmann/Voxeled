@@ -11,6 +11,12 @@ public class Vector3 {
         this.z = z;
     }
 
+    public Vector3(double x, double y, double z) {
+        this.x = (float) x;
+        this.y = (float) y;
+        this.z = (float) z;
+    }
+
     public Vector3() {
         this.x = 0;
         this.y = 0;
@@ -20,6 +26,8 @@ public class Vector3 {
     public static Vector3 zero (){
         return new Vector3(0,0,0);
     }
+    public static Vector3 max () {return new Vector3(Float.POSITIVE_INFINITY,Float.POSITIVE_INFINITY,Float.POSITIVE_INFINITY);}
+    public static Vector3 min () {return new Vector3(Float.NEGATIVE_INFINITY,Float.NEGATIVE_INFINITY,Float.NEGATIVE_INFINITY);}
 
     public static Vector3 crossProduct(Vector3 v1, Vector3 v2) {
         return new Vector3(
@@ -68,8 +76,12 @@ public class Vector3 {
         Vector3 copy = copy();
         return copy.add(adder);
     }
+    public Vector3 added(float x, float y, float z) {
+        Vector3 copy = copy();
+        return copy.add(new Vector3(x,y,z));
+    }
 
-    public Vector3 copy() {
+    private Vector3 copy() {
         return new Vector3(x,y,z);
     }
 

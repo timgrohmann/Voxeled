@@ -2,21 +2,22 @@ package World;
 
 import Buffers.BlockABO;
 import Entities.Block;
-import Entities.Entity;
 import GL_Math.Vector3;
+import Main_Package.FileManager;
+import Models.CuboidFace;
 import Models.Vertex;
+import Player.Player;
 import Structures.Tree;
 
 import java.io.FileOutputStream;
-import java.util.ArrayList;
+import java.net.URL;
+import java.nio.file.Paths;
 
 /**
  * Defines a 16x16 block area
  */
 public class Chunk {
     private Block[] blocks;
-
-    private final ArrayList<Entity> entities;
 
     public final World world;
 
@@ -28,6 +29,7 @@ public class Chunk {
 
     boolean willUnload = false;
     private boolean shouldReload = false;
+    public boolean shouldUpdate = true;
     private boolean addedStructures = false;
 
     private BlockABO arrayBuffer;
@@ -37,7 +39,6 @@ public class Chunk {
         this.world = world;
         this.xOff = xOff;
         this.zOff = zOff;
-        this.entities = new ArrayList<>();
         generate();
         load();
     }
@@ -46,7 +47,6 @@ public class Chunk {
         this.world = world;
         this.xOff = xPos;
         this.zOff = zPos;
-        this.entities = new ArrayList<>();
         //Load from bytes
         blocks = new Block[blockCount()];
         assert(bytes.length == blocks.length);
@@ -79,55 +79,55 @@ public class Chunk {
 
                     if (chunkY > 0) {
                         Block bottomBlock = getBlockAt(chunkX,chunkY - 1,chunkZ);
-                        thisBlock.setVisibleBottom(visibilityCheck(thisBlock,bottomBlock));
+                        thisBlock.setVisibleBottom(visibilityCheck(thisBlock,bottomBlock, CuboidFace.Face.BOTTOM));
                     }
 
                     if (chunkY < chunkHeight - 1) {
                         Block topBlock = getBlockAt(chunkX, chunkY + 1, chunkZ);
-                        thisBlock.setVisibleTop(visibilityCheck(thisBlock,topBlock));
+                        thisBlock.setVisibleTop(visibilityCheck(thisBlock,topBlock, CuboidFace.Face.TOP));
                     }
 
                     if (chunkX > 0) {
                         Block sideBlock = getBlockAt(chunkX - 1,chunkY,chunkZ);
-                        thisBlock.setVisibleLeft(visibilityCheck(thisBlock,sideBlock));
+                        thisBlock.setVisibleLeft(visibilityCheck(thisBlock,sideBlock, CuboidFace.Face.LEFT));
                     } else {
                         Chunk next = world.getChunk(xOff - 1, zOff);
                         if (next != null) {
                             Block otherBlock = next.getBlockAt(Chunk.chunkSize - 1,chunkY, chunkZ);
-                            thisBlock.setVisibleLeft(visibilityCheck(thisBlock,otherBlock));
+                            thisBlock.setVisibleLeft(visibilityCheck(thisBlock,otherBlock, CuboidFace.Face.LEFT));
                         }
                     }
 
                     if (chunkX < chunkSize - 1) {
                         Block sideBlock = getBlockAt(chunkX + 1, chunkY, chunkZ);
-                        thisBlock.setVisibleRight(visibilityCheck(thisBlock,sideBlock));
+                        thisBlock.setVisibleRight(visibilityCheck(thisBlock,sideBlock, CuboidFace.Face.RIGHT));
                     } else {
                         Chunk next = world.getChunk(xOff + 1, zOff);
                         if (next != null) {
                             Block otherBlock = next.getBlockAt(0,chunkY, chunkZ);
-                            thisBlock.setVisibleRight(visibilityCheck(thisBlock,otherBlock));
+                            thisBlock.setVisibleRight(visibilityCheck(thisBlock,otherBlock, CuboidFace.Face.RIGHT));
                         }
                     }
 
                     if (chunkZ > 0) {
                         Block sideBlock = getBlockAt(chunkX, chunkY, chunkZ - 1);
-                        thisBlock.setVisibleBack(visibilityCheck(thisBlock,sideBlock));
+                        thisBlock.setVisibleBack(visibilityCheck(thisBlock,sideBlock, CuboidFace.Face.BACK));
                     } else {
                         Chunk next = world.getChunk(xOff, zOff - 1);
                         if (next != null) {
                             Block otherBlock = next.getBlockAt(chunkX,chunkY, Chunk.chunkSize - 1);
-                            thisBlock.setVisibleBack(visibilityCheck(thisBlock,otherBlock));
+                            thisBlock.setVisibleBack(visibilityCheck(thisBlock,otherBlock, CuboidFace.Face.BACK));
                         }
                     }
 
                     if (chunkZ < chunkSize - 1) {
                         Block sideBlock = getBlockAt(chunkX,chunkY,chunkZ + 1);
-                        thisBlock.setVisibleFront(visibilityCheck(thisBlock,sideBlock));
+                        thisBlock.setVisibleFront(visibilityCheck(thisBlock,sideBlock, CuboidFace.Face.FRONT));
                     } else {
                         Chunk next = world.getChunk(xOff, zOff + 1);
                         if (next != null) {
                             Block otherBlock = next.getBlockAt(chunkX,chunkY, 0);
-                            thisBlock.setVisibleFront(visibilityCheck(thisBlock,otherBlock));
+                            thisBlock.setVisibleFront(visibilityCheck(thisBlock,otherBlock, CuboidFace.Face.FRONT));
                         }
                     }
 
@@ -143,8 +143,38 @@ public class Chunk {
      * @param otherBlock Input 2
      * @return True if face should be visible
      */
-    private boolean visibilityCheck(Block thisBlock, Block otherBlock) {
-        return otherBlock == null || (otherBlock.transparent && !thisBlock.transparent);
+    private boolean visibilityCheck(Block thisBlock, Block otherBlock, CuboidFace.Face face) {
+        if (otherBlock == null || (otherBlock.transparent && !thisBlock.transparent)) return true;
+        if (otherBlock.model == null || thisBlock.model == null) return true;
+        if (thisBlock.transparent && otherBlock.transparent && thisBlock.type != otherBlock.type) return true;
+        switch (face){
+            case TOP:
+                return !cullingForBlock(thisBlock, CuboidFace.Face.TOP)
+                        || !cullingForBlock(otherBlock, CuboidFace.Face.BOTTOM);
+            case BOTTOM:
+                return !cullingForBlock(thisBlock,CuboidFace.Face.BOTTOM)
+                        || !cullingForBlock(otherBlock,CuboidFace.Face.TOP);
+            case LEFT:
+                return !cullingForBlock(thisBlock,CuboidFace.Face.LEFT)
+                        || !cullingForBlock(otherBlock,CuboidFace.Face.RIGHT);
+            case RIGHT:
+                return !cullingForBlock(thisBlock,CuboidFace.Face.RIGHT)
+                        || !cullingForBlock(otherBlock,CuboidFace.Face.LEFT);
+            case FRONT:
+                return !cullingForBlock(thisBlock,CuboidFace.Face.FRONT)
+                        || !cullingForBlock(otherBlock,CuboidFace.Face.BACK);
+            case BACK:
+                return !cullingForBlock(thisBlock,CuboidFace.Face.BACK)
+                        || !cullingForBlock(otherBlock,CuboidFace.Face.FRONT);
+        }
+        return false;
+        //return otherBlock == null || (otherBlock.transparent && !thisBlock.transparent);
+    }
+
+    private boolean cullingForBlock(Block b, CuboidFace.Face face) {
+        //Map<CuboidFace.Face, CuboidFace> faceMap = b.model.getCuboidModels()[0].getFacesMap();
+        //if (!faceMap.containsKey(face)) return false;
+        return b.shouldCullFace(face);
     }
 
 
@@ -159,17 +189,20 @@ public class Chunk {
         arrayBuffer.load(vertices);
         arrayBuffer.loadAttributePointers();
 
-        waterArrayBuffer = new BlockABO(world.renderer.waterShader);
+        waterArrayBuffer = new BlockABO(world.renderer.worldShader);
         waterArrayBuffer.load(getTransparentVertices());
         waterArrayBuffer.loadAttributePointers();
     }
 
     void tick() {
-        reload(false);
+        if (!shouldUpdate) return;
         for (Block b: blocks) {
-            if (b == null) continue;
-            b.tick();
+            if (b != null && b.shouldUpdate) {
+                b.tick();
+            }
         }
+        reload(true);
+        shouldUpdate = false;
     }
 
     /**
@@ -208,7 +241,7 @@ public class Chunk {
     private int getVertexCount() {
         int c = 0;
         for (Block e: blocks) {
-            if (e == null || !e.shouldMakeVertices() || e.transparent) continue;
+            if (e == null || e.technicalBlock() || e.transparent) continue;
             c += e.vertexCount();
         }
         return c;
@@ -217,7 +250,7 @@ public class Chunk {
     private int getTransparentVertexCount() {
         int c = 0;
         for (Block e: blocks) {
-            if (e == null || !e.shouldMakeVertices() || !e.transparent) continue;
+            if (e == null || e.technicalBlock() || !e.transparent) continue;
             c += e.vertexCount();
         }
         return c;
@@ -229,7 +262,7 @@ public class Chunk {
 
         int currentPos = 0;
         for (Block block: blocks) {
-            if (block == null || !block.shouldMakeVertices() || block.transparent) continue;
+            if (block == null || block.technicalBlock() || block.transparent) continue;
             Vertex[] entityVertices = block.getVertices();
             for (Vertex entityVertex: entityVertices) {
                 vertices[currentPos] = entityVertex;
@@ -246,7 +279,7 @@ public class Chunk {
 
         int currentPos = 0;
         for (Block block: blocks) {
-            if (block == null || !block.shouldMakeVertices() || !block.transparent) continue;
+            if (block == null || block.technicalBlock() || !block.transparent) continue;
             Vertex[] entityVertices = block.getVertices();
             for (Vertex entityVertex: entityVertices) {
                 vertices[currentPos] = entityVertex;
@@ -311,6 +344,8 @@ public class Chunk {
         blocks[indexForPosition((int) block.getPos().x - xOff * Chunk.chunkSize,(int) block.getPos().y,(int) block.getPos().z - zOff * Chunk.chunkSize)] = null;
 
         shouldReload = true;
+        shouldUpdate = true;
+        world.updateBlocksAround(block.getPos());
         changesToBlock(block);
     }
 
@@ -354,7 +389,7 @@ public class Chunk {
      * Saves chunk's block's byte data to .chunk file in /world/chunks
      */
     void saveToFile() {
-        String fileName = "world/chunks/c_" + String.valueOf(xOff) + "_" + String.valueOf(zOff) + ".chunk";
+        String fileName = "chunks/c_" + String.valueOf(xOff) + "_" + String.valueOf(zOff) + ".chunk";
 
         byte[] data = new byte[blockCount()];
 
@@ -366,13 +401,7 @@ public class Chunk {
             data[i] = blocks[i].store();
         }
 
-        try{
-            FileOutputStream out = new FileOutputStream(fileName);
-            out.write(data);
-            out.close();
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
+        FileManager.writeToFile(data, fileName);
 
     }
 
