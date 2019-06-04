@@ -69,9 +69,15 @@ public class Game_IO {
         mouseRightJustPressed = false;
     }
 
+    private Renderer getRenderer() {
+        return renderer;
+    }
+
     private final GLFWKeyCallbackI keyInput = (long window, int key, int scancode, int action, int mods) -> {
         if (key == GLFW_KEY_M && action == GLFW_PRESS) toggleMenu();
         if (key == GLFW_KEY_E && action == GLFW_PRESS) toggleInventory();
+
+        getRenderer().player.handleKeyInput(key, action);
     };
 
     private void handleBlockInteraction(Player p) {

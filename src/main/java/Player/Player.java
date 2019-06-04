@@ -4,6 +4,7 @@ import Entities.*;
 import GL_Math.Vector3;
 import Main_Package.FileManager;
 import Main_Package.Renderer;
+import org.lwjgl.glfw.GLFW;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -109,6 +110,12 @@ public class Player extends Entity implements Collidable{
 
         if (glfwGetKey(renderer.getWindow().identifier,GLFW_KEY_SPACE) == GLFW_PRESS){
             this.jump(0.14f);
+        }
+    }
+
+    public void handleKeyInput(int key, int action) {
+        if (action == org.lwjgl.glfw.GLFW.GLFW_PRESS && GLFW_KEY_1 <= key && key <= GLFW_KEY_9) {
+            this.selectedSlot = key - 49;
         }
     }
 

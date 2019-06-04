@@ -17,7 +17,6 @@ public class GUIHoverButton extends GUIButton {
         if (hov == hover) return;
         hover = hov;
 
-        System.out.format("hover set to %b",  hov);
         if (hover) {
             this.uvOrigin = HOVER_ORIGIN;
         } else {

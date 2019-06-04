@@ -19,6 +19,6 @@ void main()
     vec3 skyBlue = time * vec3(135.0/255,206.0/255,250.0/255);
 
     vec3 col = skyBlue * borderLightness;
-    colorOut = vec4(col, 1.0);
-    //colorOut = vec4(UV / 100,1.0);
+    //colorOut = vec4(col, 1.0);
+    colorOut = texture(texture_cube,UV);
 }

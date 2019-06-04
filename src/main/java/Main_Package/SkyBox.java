@@ -49,7 +49,7 @@ class SkyBox {
 
     public void render(Matrix4 matrix4, Vector3 playerPos) {
         skyBoxShaderProgram.use();
-        //angle += 0.003;
+        angle += 0.003;
 
         Renderer.setFaceCulling(false);
         skyBoxShaderProgram.setUniformMatrix("mat", matrix4);
